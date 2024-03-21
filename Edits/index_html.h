@@ -302,9 +302,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xhttp.open("PUT", "BUTTON_0", false);
       xhttp.send();
     }
-    // function to handle button press from HTML code above
-    // and send a processing string back to server
-    // this processing string is use in the .on method
+   
     function ButtonPress1() {
       var xhttp = new XMLHttpRequest();
       /*
@@ -320,21 +318,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
     function UpdateSlider(value) {
       var xhttp = new XMLHttpRequest();
-      // this time i want immediate feedback to the fan speed
-      // yea yea yea i realize i'm computing fan speed but the point
-      // is how to give immediate feedback
+     
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          // update the web based on reply from  ESP
+         
           document.getElementById("fanrpm").innerHTML = this.responseText;
         }
       }
-      // this syntax is really weird the ? is a delimiter
-      // first arg UPDATE_SLIDER is use in the .on method
-      // server.on("/UPDATE_SLIDER", UpdateSlider);
-      // then the second arg VALUE is use in the processing function
-      // String t_state = server.arg("VALUE");
-      // then + the controls value property
+     
       xhttp.open("PUT", "UPDATE_SLIDER?VALUE=" + value, true);
       xhttp.send();
     }
@@ -422,8 +413,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         xmlHttp.onreadystatechange = response;
         xmlHttp.send(null);
       }
-      // you may have to play with this value, big pages need more porcessing time, and hence
-      // a longer timeout
       setTimeout("process()", 100);
     }
   </script>

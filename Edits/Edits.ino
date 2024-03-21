@@ -37,17 +37,37 @@
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
 
-WebServer server(80);
+// start your defines for pins for sensors, outputs etc.
+// #define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
+// #define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
+// #define PIN_LED 2     //On board LED
+// #define PIN_A0 34     // some analog input sensor
+// #define PIN_A1 35     // some analog input sensor
 
 const int led = 13;
-const int buffer_size = 4096;
+const int buffer_size = 2048;
+
+
+// variables to store measure data and sensor states
+int BitsA0 = 0, BitsA1 = 0;
+float VoltsA0 = 0, VoltsA1 = 0;
+int FanSpeed = 0;
+bool LED0 = false, SomeOutput = false;
+uint32_t SensorUpdate = 0;
+int FanRPM = 0;
+
+// the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
+char XML[2048];
+char buf[32];
+
+WebServer server(80);
 
 void handleRoot() {
   digitalWrite(led, 1);
-  char temp[buffer_size];
-  int sec = millis() / 1000;
-  int min = sec / 60;
-  int hr = min / 60;
+  // char temp[buffer_size];
+  // int sec = millis() / 1000;
+  // int min = sec / 60;
+  // int hr = min / 60;
   // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
   server.send(200, "text/html", PAGE_MAIN);
   digitalWrite(led, 0);
@@ -76,6 +96,19 @@ void setup(void) {
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
   Serial.begin(115200);
+
+  // pinMode(PIN_FAN, OUTPUT);
+  // pinMode(PIN_LED, OUTPUT);
+
+  // turn off led
+  // LED0 = false;
+  // digitalWrite(PIN_LED, LED0);
+
+  // configure LED PWM functionalitites
+  // ledcSetup(0, 10000, 8);
+  // ledcAttachPin(PIN_FAN, 0);
+  // ledcWrite(0, FanSpeed);
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
