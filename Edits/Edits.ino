@@ -57,8 +57,7 @@ const int PIN_A1 = 35;     // some analog input sensor
 int BitsA0 = 0, BitsA1 = 0;
 float VoltsA0 = 0, VoltsA1 = 0;
 int FanSpeed = 0;
-int LED0 = 0;
-bool LED00 = false, SomeOutput = false;
+bool LED0 = false, SomeOutput = false;
 uint32_t SensorUpdate = 0;
 int FanRPM = 0;
 
@@ -69,19 +68,24 @@ char buf[32];
 WebServer server(80);
 
 void setup(void) {
+
+  Serial.begin(115200);
+  
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
 
   pinMode(PIN_FAN, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
-  digitalWrite(PIN_LED, 0);
+  digitalWrite(PIN_LED, LED0);
 
   // configure LED PWM functionalitites
   ledcSetup(0, 10000, 8);
   ledcAttachPin(PIN_FAN, 0);
   ledcWrite(0, FanSpeed);
 
-  Serial.begin(115200);
+  disableCore0WDT();
+
+  
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -103,7 +107,13 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
 
-  server.on("/", handleRoot);
+  server.on("/", handleRoot); // this is SendWebsite()
+  server.on("/xml", sendXML);
+
+  server.on("/UPDATE_SLIDER", updateSlider);
+  server.on("/BUTTON_0", processButton_0);
+  server.on("/BUTTON_1", processButton_1);
+
   server.on("/test.svg", drawGraph);
   server.on("/inline", []() {
     server.send(200, "text/plain", "this works as well");
@@ -117,7 +127,6 @@ void loop(void) {
   server.handleClient();
   delay(2);//allow the cpu to switch to other tasks
 }
-
 
 void handleRoot() {
   digitalWrite(led, 1);
@@ -149,6 +158,42 @@ void handleNotFound() {
   digitalWrite(led, 0);
 }
 
+void processButton_0() {
+  LED0 = !LED0;
+  digitalWrite(PIN_LED, LED0);
+  Serial.print("Button 0 "); Serial.println(LED0);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
+// same notion for processing button_1
+void processButton_1() {
+  Serial.println("Button 1 press");
+  SomeOutput = !SomeOutput;
+  digitalWrite(PIN_OUTPUT, SomeOutput);
+  Serial.print("Button 1 "); Serial.println(LED0);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
+void updateSlider() {
+  // many I hate strings, but wifi lib uses them...
+  String t_state = server.arg("VALUE");
+
+  // conver the string sent from the web page to an int
+  FanSpeed = t_state.toInt();
+  Serial.print("UpdateSlider"); Serial.println(FanSpeed);
+  // now set the PWM duty cycle
+  ledcWrite(0, FanSpeed);
+
+  FanRPM = map(FanSpeed, 0, 255, 0, 2400);
+  strcpy(buf, "");
+  sprintf(buf, "%d", FanRPM);
+  sprintf(buf, buf);
+
+  // now send it back
+  server.send(200, "text/plain", buf); //Send web page
+}
+
+
 void drawGraph() {
   String out = "";
   char temp[100];
@@ -165,4 +210,45 @@ void drawGraph() {
   out += "</g>\n</svg>\n";
 
   server.send(200, "image/svg+xml", out);
+}
+
+void sendXML() {
+  strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
+
+  // send bitsA0
+  sprintf(buf, "<B0>%d</B0>\n", BitsA0);
+  strcat(XML, buf);
+
+  // send Volts0
+  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
+  strcat(XML, buf);
+
+  // send bits1
+  sprintf(buf, "<B1>%d</B1>\n", BitsA1);
+  strcat(XML, buf);
+
+  // send Volts1
+  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  strcat(XML, buf);
+
+  // show led0 status
+  if (LED0) {
+    strcat(XML, "<LED>1</LED>\n");
+  }
+  else {
+    strcat(XML, "<LED>0</LED>\n");
+  }
+
+  if (SomeOutput) {
+    strcat(XML, "<SWITCH>1</SWITCH>\n");
+  }
+  else {
+    strcat(XML, "<SWITCH>0</SWITCH>\n");
+  }
+
+  strcat(XML, "</Data>\n");
+  Serial.println(XML);
+  server.send(200, "text/xml", XML);
+
+
 }

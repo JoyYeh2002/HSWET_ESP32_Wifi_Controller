@@ -260,7 +260,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <br>
       <input type="range" class="fanrpmslider" min="0" max="255" value="0" width="0%" oninput="UpdateSlider(this.value)" />
       <br>
-      <img src="/test.svg" />
+      <!-- <img src="/test.svg" /> -->
       <br>
     </main>
     <footer div class="foot" id="temp">ESP32 Web Page Creation and Data Update Demo </div>
