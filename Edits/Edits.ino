@@ -1,32 +1,3 @@
-/*
-   Copyright (c) 2015, Majenko Technologies
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without modification,
-   are permitted provided that the following conditions are met:
-
- * * Redistributions of source code must retain the above copyright notice, this
-     list of conditions and the following disclaimer.
-
- * * Redistributions in binary form must reproduce the above copyright notice, this
-     list of conditions and the following disclaimer in the documentation and/or
-     other materials provided with the distribution.
-
- * * Neither the name of Majenko Technologies nor the names of its
-     contributors may be used to endorse or promote products derived from
-     this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-   DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-   ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -44,12 +15,12 @@ const char *password = "ESP32_Tutorial";
 // #define PIN_A0 34     // some analog input sensor
 // #define PIN_A1 35     // some analog input sensor
 
-const int led = 13;
+const int led = 4;
 const int buffer_size = 2048;
 
 const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital write from the web page
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
-const int PIN_LED = 4;     //On board LED
+const int PIN_LED = 13;     //On board LED
 const int PIN_A0 = 34;     // some analog input sensor
 const int PIN_A1 = 35;     // some analog input sensor
 
@@ -70,7 +41,7 @@ WebServer server(80);
 void setup(void) {
 
   Serial.begin(115200);
-  
+
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
 
@@ -84,8 +55,7 @@ void setup(void) {
   ledcWrite(0, FanSpeed);
 
   disableCore0WDT();
-
-  
+  disableCore1WDT();
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -107,18 +77,18 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
 
-  server.on("/", handleRoot); // this is SendWebsite()
-  server.on("/xml", sendXML);
+  server.on("/", HandleRoot); // this is SendWebsite()
+  server.on("/xml", SendXML);
 
-  server.on("/UPDATE_SLIDER", updateSlider);
-  server.on("/BUTTON_0", processButton_0);
-  server.on("/BUTTON_1", processButton_1);
+  server.on("/UPDATE_SLIDER", UpdateSlider);
+  server.on("/BUTTON_0", ProcessButton_0);
+  server.on("/BUTTON_1", ProcessButton_1);
 
-  server.on("/test.svg", drawGraph);
-  server.on("/inline", []() {
-    server.send(200, "text/plain", "this works as well");
-  });
-  server.onNotFound(handleNotFound);
+  //server.on("/test.svg", drawGraph);
+  // server.on("/inline", []() {
+  //   server.send(200, "text/plain", "this works as well");
+  // });
+  server.onNotFound(HandleNotFound);
   server.begin();
   Serial.println("HTTP server started");
 }
@@ -128,7 +98,7 @@ void loop(void) {
   delay(2);//allow the cpu to switch to other tasks
 }
 
-void handleRoot() {
+void HandleRoot() {
   digitalWrite(led, 1);
   // char temp[buffer_size];
   // int sec = millis() / 1000;
@@ -139,7 +109,7 @@ void handleRoot() {
   digitalWrite(led, 0);
 }
 
-void handleNotFound() {
+void HandleNotFound() {
   digitalWrite(led, 1);
   String message = "File Not Found\n\n";
   message += "URI: ";
@@ -158,7 +128,7 @@ void handleNotFound() {
   digitalWrite(led, 0);
 }
 
-void processButton_0() {
+void ProcessButton_0() {
   LED0 = !LED0;
   digitalWrite(PIN_LED, LED0);
   Serial.print("Button 0 "); Serial.println(LED0);
@@ -166,7 +136,7 @@ void processButton_0() {
 }
 
 // same notion for processing button_1
-void processButton_1() {
+void ProcessButton_1() {
   Serial.println("Button 1 press");
   SomeOutput = !SomeOutput;
   digitalWrite(PIN_OUTPUT, SomeOutput);
@@ -174,7 +144,7 @@ void processButton_1() {
   server.send(200, "text/plain", ""); //Send web page
 }
 
-void updateSlider() {
+void UpdateSlider() {
   // many I hate strings, but wifi lib uses them...
   String t_state = server.arg("VALUE");
 
@@ -212,7 +182,7 @@ void drawGraph() {
   server.send(200, "image/svg+xml", out);
 }
 
-void sendXML() {
+void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
   // send bitsA0
@@ -247,7 +217,9 @@ void sendXML() {
   }
 
   strcat(XML, "</Data>\n");
-  Serial.println(XML);
+  Serial.println("XML data constructed:");
+  Serial.println(XML); // Print the XML data
+  
   server.send(200, "text/xml", XML);
 
 

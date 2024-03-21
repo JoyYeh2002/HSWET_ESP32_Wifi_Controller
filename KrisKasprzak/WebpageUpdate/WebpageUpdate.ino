@@ -63,8 +63,8 @@
 #define USE_INTRANET
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "your_home_ssid"
-#define LOCAL_PASS "your_home_passwrord"
+#define LOCAL_SSID "my_network"
+#define LOCAL_PASS "ESP32_Tutorial"
 
 // once  you are read to go live these settings are what you client will connect to
 #define AP_SSID "TestWebSite"
@@ -73,7 +73,7 @@
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
-#define PIN_LED 2     //On board LED
+#define PIN_LED 4    //On board LED
 #define PIN_A0 34     // some analog input sensor
 #define PIN_A1 35     // some analog input sensor
 
