@@ -47,12 +47,18 @@ const char *password = "ESP32_Tutorial";
 const int led = 13;
 const int buffer_size = 2048;
 
+const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital write from the web page
+const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
+const int PIN_LED = 4;     //On board LED
+const int PIN_A0 = 34;     // some analog input sensor
+const int PIN_A1 = 35;     // some analog input sensor
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0;
 float VoltsA0 = 0, VoltsA1 = 0;
 int FanSpeed = 0;
-bool LED0 = false, SomeOutput = false;
+int LED0 = 0;
+bool LED00 = false, SomeOutput = false;
 uint32_t SensorUpdate = 0;
 int FanRPM = 0;
 
@@ -62,52 +68,20 @@ char buf[32];
 
 WebServer server(80);
 
-void handleRoot() {
-  digitalWrite(led, 1);
-  // char temp[buffer_size];
-  // int sec = millis() / 1000;
-  // int min = sec / 60;
-  // int hr = min / 60;
-  // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
-  server.send(200, "text/html", PAGE_MAIN);
-  digitalWrite(led, 0);
-}
-
-void handleNotFound() {
-  digitalWrite(led, 1);
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-
-  server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
-}
-
 void setup(void) {
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
-  Serial.begin(115200);
 
-  // pinMode(PIN_FAN, OUTPUT);
-  // pinMode(PIN_LED, OUTPUT);
-
-  // turn off led
-  // LED0 = false;
-  // digitalWrite(PIN_LED, LED0);
+  pinMode(PIN_FAN, OUTPUT);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, 0);
 
   // configure LED PWM functionalitites
-  // ledcSetup(0, 10000, 8);
-  // ledcAttachPin(PIN_FAN, 0);
-  // ledcWrite(0, FanSpeed);
+  ledcSetup(0, 10000, 8);
+  ledcAttachPin(PIN_FAN, 0);
+  ledcWrite(0, FanSpeed);
+
+  Serial.begin(115200);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -142,6 +116,37 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   delay(2);//allow the cpu to switch to other tasks
+}
+
+
+void handleRoot() {
+  digitalWrite(led, 1);
+  // char temp[buffer_size];
+  // int sec = millis() / 1000;
+  // int min = sec / 60;
+  // int hr = min / 60;
+  // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
+  server.send(200, "text/html", PAGE_MAIN);
+  digitalWrite(led, 0);
+}
+
+void handleNotFound() {
+  digitalWrite(led, 1);
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+
+  server.send(404, "text/plain", message);
+  digitalWrite(led, 0);
 }
 
 void drawGraph() {
