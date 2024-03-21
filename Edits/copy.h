@@ -1,180 +1,173 @@
-const char PAGE_MAIN[] PROGMEM = R"=====( 
+
+const char PAGE_MAIN[] PROGMEM = R"=====(
+<!DOCTYPE html>
 <html lang="en" class="js-focus-visible">
-  <head>
-    <meta http-equiv='refresh' content='5' />
-    <title>HWSET Wind Turbine Control Panel</title>
-    <style>
-      body {
-        background-color: #e6fffa;
-        font-family: Arial, Helvetica, Sans-Serif;
-        Color: #000088;
-      }
+  <title>Web Page Update Demo</title>
+  <style>
+    table {
+      position: relative;
+      width: 100%;
+      border-spacing: 0px;
+    }
 
-      table {
-        position: relative;
-        width: 100%;
-        border-spacing: 0px;
-      }
+    tr {
+      border: 1px solid white;
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 20px;
+    }
 
-      tr {
-        border: 1px solid white;
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 20px;
-      }
+    th {
+      height: 20px;
+      padding: 3px 15px;
+      background-color: #343a40;
+      color: #FFFFFF !important;
+    }
 
-      th {
-        height: 20px;
-        padding: 3px 15px;
-        background-color: #343a40;
-        color: #FFFFFF !important;
-      }
+    td {
+      height: 20px;
+      padding: 3px 15px;
+    }
 
-      td {
-        height: 20px;
-        padding: 3px 15px;
-      }
+    .tabledata {
+      font-size: 24px;
+      position: relative;
+      padding-left: 5px;
+      padding-top: 5px;
+      height: 25px;
+      border-radius: 5px;
+      color: #FFFFFF;
+      line-height: 20px;
+      transition: all 200ms ease-in-out;
+      background-color: #00AA00;
+    }
 
-      .tabledata {
-        font-size: 24px;
-        position: relative;
-        padding-left: 5px;
-        padding-top: 5px;
-        height: 25px;
-        border-radius: 5px;
-        color: #FFFFFF;
-        line-height: 20px;
-        transition: all 200ms ease-in-out;
-        background-color: #00AA00;
-      }
+    .fanrpmslider {
+      width: 30%;
+      height: 55px;
+      outline: none;
+      height: 25px;
+    }
 
-      .fanrpmslider {
-        width: 30%;
-        height: 55px;
-        outline: none;
-        height: 25px;
-      }
+    .bodytext {
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 24px;
+      text-align: left;
+      font-weight: light;
+      border-radius: 5px;
+      display: inline;
+    }
 
-      .bodytext {
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 24px;
-        text-align: left;
-        font-weight: light;
-        border-radius: 5px;
-        display: inline;
-      }
+    .navbar {
+      width: 100%;
+      height: 50px;
+      margin: 0;
+      padding: 10px 0px;
+      background-color: #FFF;
+      color: #000000;
+      border-bottom: 5px solid #293578;
+    }
 
-      .navbar {
-        width: 100%;
-        height: 50px;
-        margin: 0;
-        padding: 10px 0px;
-        background-color: #FFF;
-        color: #000000;
-        border-bottom: 5px solid #293578;
-      }
+    .fixed-top {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1030;
+    }
 
-      .fixed-top {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: 0;
-        z-index: 1030;
-      }
+    .navtitle {
+      float: left;
+      height: 50px;
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 50px;
+      font-weight: bold;
+      line-height: 50px;
+      padding-left: 20px;
+    }
 
-      .navtitle {
-        float: left;
-        height: 50px;
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 50px;
-        font-weight: bold;
-        line-height: 50px;
-        padding-left: 20px;
-      }
+    .navheading {
+      position: fixed;
+      left: 60%;
+      height: 50px;
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 20px;
+      padding-right: 20px;
+    }
 
-      .navheading {
-        position: fixed;
-        left: 60%;
-        height: 50px;
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 20px;
-        font-weight: bold;
-        line-height: 20px;
-        padding-right: 20px;
-      }
+    .navdata {
+      justify-content: flex-end;
+      position: fixed;
+      left: 70%;
+      height: 50px;
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 20px;
+      padding-right: 20px;
+    }
 
-      .navdata {
-        justify-content: flex-end;
-        position: fixed;
-        left: 70%;
-        height: 50px;
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 20px;
-        font-weight: bold;
-        line-height: 20px;
-        padding-right: 20px;
-      }
+    .category {
+      font-family: "Verdana", "Arial", sans-serif;
+      font-weight: bold;
+      font-size: 32px;
+      line-height: 50px;
+      padding: 20px 10px 0px 10px;
+      color: #000000;
+    }
 
-      .category {
-        font-family: "Verdana", "Arial", sans-serif;
-        font-weight: bold;
-        font-size: 32px;
-        line-height: 50px;
-        padding: 20px 10px 0px 10px;
-        color: #000000;
-      }
+    .heading {
+      font-family: "Verdana", "Arial", sans-serif;
+      font-weight: normal;
+      font-size: 28px;
+      text-align: left;
+    }
 
-      .heading {
-        font-family: "Verdana", "Arial", sans-serif;
-        font-weight: normal;
-        font-size: 28px;
-        text-align: left;
-      }
+    .btn {
+      background-color: #444444;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
 
-      .btn {
-        background-color: #444444;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-      }
+    .foot {
+      font-family: "Verdana", "Arial", sans-serif;
+      font-size: 20px;
+      position: relative;
+      height: 30px;
+      text-align: center;
+      color: #AAAAAA;
+      line-height: 20px;
+    }
 
-      .foot {
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 20px;
-        position: relative;
-        height: 30px;
-        text-align: center;
-        color: #AAAAAA;
-        line-height: 20px;
-      }
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+    }
 
-      .container {
-        max-width: 1800px;
-        margin: 0 auto;
-      }
+    table tr:first-child th:first-child {
+      border-top-left-radius: 5px;
+    }
 
-      table tr:first-child th:first-child {
-        border-top-left-radius: 5px;
-      }
+    table tr:first-child th:last-child {
+      border-top-right-radius: 5px;
+    }
 
-      table tr:first-child th:last-child {
-        border-top-right-radius: 5px;
-      }
+    table tr:last-child td:first-child {
+      border-bottom-left-radius: 5px;
+    }
 
-      table tr:last-child td:first-child {
-        border-bottom-left-radius: 5px;
-      }
-
-      table tr:last-child td:last-child {
-        border-bottom-right-radius: 5px;
-      }
-    </style>
-  </head>
+    table tr:last-child td:last-child {
+      border-bottom-right-radius: 5px;
+    }
+  </style>
   <body style="background-color: #efefef" onload="process()">
     <header>
       <div class="navbar fixed-top">
@@ -188,7 +181,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </div>
       </div>
     </header>
-    
     <main class="container" style="margin-top:70px">
       <div class="category">Sensor Readings</div>
       <div style="border-radius: 10px !important;">
@@ -260,13 +252,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <br>
       <input type="range" class="fanrpmslider" min="0" max="255" value="0" width="0%" oninput="UpdateSlider(this.value)" />
       <br>
-      <!-- <img src="/test.svg" /> -->
       <br>
     </main>
     <footer div class="foot" id="temp">ESP32 Web Page Creation and Data Update Demo </div>
     </footer>
   </body>
-
   <script type="text/javascript">
     // global variable visible to all java functions
     var xmlHttp = createXmlHttpObject();
@@ -302,7 +292,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xhttp.open("PUT", "BUTTON_0", false);
       xhttp.send();
     }
-   
+    // function to handle button press from HTML code above
+    // and send a processing string back to server
+    // this processing string is use in the .on method
     function ButtonPress1() {
       var xhttp = new XMLHttpRequest();
       /*
@@ -318,14 +310,21 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
     function UpdateSlider(value) {
       var xhttp = new XMLHttpRequest();
-     
+      // this time i want immediate feedback to the fan speed
+      // yea yea yea i realize i'm computing fan speed but the point
+      // is how to give immediate feedback
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-         
+          // update the web based on reply from  ESP
           document.getElementById("fanrpm").innerHTML = this.responseText;
         }
       }
-     
+      // this syntax is really weird the ? is a delimiter
+      // first arg UPDATE_SLIDER is use in the .on method
+      // server.on("/UPDATE_SLIDER", UpdateSlider);
+      // then the second arg VALUE is use in the processing function
+      // String t_state = server.arg("VALUE");
+      // then + the controls value property
       xhttp.open("PUT", "UPDATE_SLIDER?VALUE=" + value, true);
       xhttp.send();
     }
@@ -406,14 +405,20 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("switch").style.color = "#00AA00";
       }
     }
-
+    // general processing code for the web page to ask for an XML steam
+    // this is actually why you need to keep sending data to the page to 
+    // force this call with stuff like this
+    // server.on("/xml", SendXML);
+    // otherwise the page will not request XML from the ESP, and updates will not happen
     function process() {
       if (xmlHttp.readyState == 0 || xmlHttp.readyState == 4) {
         xmlHttp.open("PUT", "xml", true);
         xmlHttp.onreadystatechange = response;
         xmlHttp.send(null);
       }
-      setTimeout("process()", 100);
+      // you may have to play with this value, big pages need more porcessing time, and hence
+      // a longer timeout
+      setTimeout("process()", 200);
     }
   </script>
-</html>)=====";
+</html> )=====";

@@ -8,21 +8,14 @@
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
 
-// start your defines for pins for sensors, outputs etc.
-// #define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
-// #define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
-// #define PIN_LED 2     //On board LED
-// #define PIN_A0 34     // some analog input sensor
-// #define PIN_A1 35     // some analog input sensor
-
 const int led = 4;
 const int buffer_size = 2048;
 
 const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital write from the web page
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
 const int PIN_LED = 13;     //On board LED
-const int PIN_A0 = 10;     // some analog input sensor
-const int PIN_A1 = 11;     // some analog input sensor
+const int PIN_A0 = 34;     // some analog input sensor
+const int PIN_A1 = 35;     // some analog input sensor
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0;
@@ -94,21 +87,8 @@ void setup(void) {
 }
 
 void loop(void) {
-
-    if ((millis() - SensorUpdate) >= 50) {
-    //Serial.println("Reading Sensors");
-    SensorUpdate = millis();
-    BitsA0 = analogRead(PIN_A0);
-    BitsA1 = analogRead(PIN_A1);
-
-    // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 3.3 / 4096;
-    VoltsA1 = BitsA1 * 3.3 / 4096;
-
-  }
-
   server.handleClient();
-  
+  delay(2);//allow the cpu to switch to other tasks
 }
 
 void HandleRoot() {
@@ -231,7 +211,7 @@ void SendXML() {
 
   strcat(XML, "</Data>\n");
   Serial.println("XML data constructed:");
-  // Serial.println(XML); // Print the XML data
+  Serial.println(XML); // Print the XML data
   
   server.send(200, "text/xml", XML);
 
