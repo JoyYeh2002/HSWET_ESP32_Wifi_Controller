@@ -306,7 +306,6 @@ Serial.print("Button 1 "); Serial.println(LED0);
   */
 }
 
-
 // code to send the main web page
 // PAGE_MAIN is a large char defined in SuperMon.h
 void SendWebsite() {

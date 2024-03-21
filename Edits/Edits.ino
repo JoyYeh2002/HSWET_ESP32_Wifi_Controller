@@ -40,7 +40,7 @@ const char *password = "ESP32_Tutorial";
 WebServer server(80);
 
 const int led = 13;
-const int buffer_size = 2048;
+const int buffer_size = 4096;
 
 void handleRoot() {
   digitalWrite(led, 1);
@@ -48,8 +48,8 @@ void handleRoot() {
   int sec = millis() / 1000;
   int min = sec / 60;
   int hr = min / 60;
-  snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
-  server.send(200, "text/html", temp);
+  // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
+  server.send(200, "text/html", PAGE_MAIN);
   digitalWrite(led, 0);
 }
 
