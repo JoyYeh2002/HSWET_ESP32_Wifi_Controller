@@ -3,10 +3,11 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include "Plots_html.h"
+#include "index_html.h"
 
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
+
 
 const int led = 4;
 const int buffer_size = 2048;
@@ -15,7 +16,7 @@ const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital w
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
 const int PIN_LED = 13;     //On board LED
 const int PIN_A0 = 10;     // some analog input sensor
-const int PIN_A1 = 11;     // some analog input sensor
+const int PIN_A1 = 17;     // some analog input sensor
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0;
@@ -26,7 +27,7 @@ uint32_t SensorUpdate = 0;
 int FanRPM = 0;
 
 // the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
-char XML[2048];
+char XML[buffer_size];
 char buf[32];
 
 WebServer server(80);
@@ -77,10 +78,6 @@ void setup(void) {
   server.on("/BUTTON_0", ProcessButton_0);
   server.on("/BUTTON_1", ProcessButton_1);
 
-  //server.on("/test.svg", drawGraph);
-  // server.on("/inline", []() {
-  //   server.send(200, "text/plain", "this works as well");
-  // });
   server.onNotFound(HandleNotFound);
   server.begin();
   Serial.println("HTTP server started");
@@ -99,18 +96,12 @@ void loop(void) {
     VoltsA1 = BitsA1 * 3.3 / 4096;
 
   }
-
   server.handleClient();
   
 }
 
 void HandleRoot() {
   digitalWrite(led, 1);
-  // char temp[buffer_size];
-  // int sec = millis() / 1000;
-  // int min = sec / 60;
-  // int hr = min / 60;
-  // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
   server.send(200, "text/html", PAGE_MAIN);
   digitalWrite(led, 0);
 }
@@ -169,7 +160,6 @@ void UpdateSlider() {
   server.send(200, "text/plain", buf); //Send web page
 }
 
-
 void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -185,9 +175,26 @@ void SendXML() {
   sprintf(buf, "<B1>%d</B1>\n", BitsA1);
   strcat(XML, buf);
 
+  // send Volts1
+  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  strcat(XML, buf);
+
+  // show led0 status
+  if (LED0) {
+    strcat(XML, "<LED>1</LED>\n");
+  }
+  else {
+    strcat(XML, "<LED>0</LED>\n");
+  }
+
+  if (SomeOutput) {
+    strcat(XML, "<SWITCH>1</SWITCH>\n");
+  }
+  else {
+    strcat(XML, "<SWITCH>0</SWITCH>\n");
+  }
+
   strcat(XML, "</Data>\n");
-
   server.send(200, "text/xml", XML);
-
 
 }

@@ -226,7 +226,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           </tr>
           <tr>
             <td>
-              <div class="bodytext">Analog pin 34</div>
+              <div class="bodytext">A0: Analog pin 10</div>
             </td>
             <td>
               <div class="tabledata" id="b0"></div>
@@ -237,7 +237,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           </tr>
           <tr>
             <td>
-              <div class="bodytext">Analog pin 35</div>
+              <div class="bodytext">A1: Analog pin 17</div>
             </td>
             <td>
               <div class="tabledata" id="b1"></div>
@@ -317,7 +317,7 @@ var trace1 = {
     color: '#80CAF6',
     shape: 'spline'
   },
-  name: 'A0'
+  name: 'A0 Voltage'
 }
 
 var trace2 = {
@@ -327,7 +327,7 @@ var trace2 = {
   yaxis: 'y2',
   mode: 'lines',
   line: {color: '#DF56F1'},
-  name: 'A1'
+  name: 'A1 Voltage'
 };
 
 // Make sub-plot layout

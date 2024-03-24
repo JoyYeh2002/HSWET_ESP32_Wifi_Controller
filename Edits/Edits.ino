@@ -8,12 +8,6 @@
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
 
-// start your defines for pins for sensors, outputs etc.
-// #define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
-// #define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
-// #define PIN_LED 2     //On board LED
-// #define PIN_A0 34     // some analog input sensor
-// #define PIN_A1 35     // some analog input sensor
 
 const int led = 4;
 const int buffer_size = 2048;
@@ -22,7 +16,7 @@ const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital w
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
 const int PIN_LED = 13;     //On board LED
 const int PIN_A0 = 10;     // some analog input sensor
-const int PIN_A1 = 11;     // some analog input sensor
+const int PIN_A1 = 17;     // some analog input sensor
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0;
@@ -33,7 +27,7 @@ uint32_t SensorUpdate = 0;
 int FanRPM = 0;
 
 // the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
-char XML[2048];
+char XML[buffer_size];
 char buf[32];
 
 WebServer server(80);
@@ -84,10 +78,6 @@ void setup(void) {
   server.on("/BUTTON_0", ProcessButton_0);
   server.on("/BUTTON_1", ProcessButton_1);
 
-  //server.on("/test.svg", drawGraph);
-  // server.on("/inline", []() {
-  //   server.send(200, "text/plain", "this works as well");
-  // });
   server.onNotFound(HandleNotFound);
   server.begin();
   Serial.println("HTTP server started");
@@ -106,18 +96,12 @@ void loop(void) {
     VoltsA1 = BitsA1 * 3.3 / 4096;
 
   }
-
   server.handleClient();
   
 }
 
 void HandleRoot() {
   digitalWrite(led, 1);
-  // char temp[buffer_size];
-  // int sec = millis() / 1000;
-  // int min = sec / 60;
-  // int hr = min / 60;
-  // snprintf(temp, buffer_size, PAGE_MAIN, hr, min % 60, sec %60);
   server.send(200, "text/html", PAGE_MAIN);
   digitalWrite(led, 0);
 }
@@ -176,25 +160,6 @@ void UpdateSlider() {
   server.send(200, "text/plain", buf); //Send web page
 }
 
-
-void drawGraph() {
-  String out = "";
-  char temp[100];
-  out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"400\" height=\"150\">\n";
-  out += "<rect width=\"400\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"1\" stroke=\"rgb(0, 0, 0)\" />\n";
-  out += "<g stroke=\"black\">\n";
-  int y = rand() % 130;
-  for (int x = 10; x < 390; x += 10) {
-    int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"1\" />\n", x, 140 - y, x + 10, 140 - y2);
-    out += temp;
-    y = y2;
-  }
-  out += "</g>\n</svg>\n";
-
-  server.send(200, "image/svg+xml", out);
-}
-
 void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -230,14 +195,6 @@ void SendXML() {
   }
 
   strcat(XML, "</Data>\n");
-  //Serial.println("XML data constructed:");
-  // Serial.println(XML); // Print the XML data
-  // Serial.print(VoltsA0);
-  // Serial.print(", ");
-  // Serial.print(VoltsA1);
-  // Serial.println("\n");
-  
   server.send(200, "text/xml", XML);
-
 
 }
