@@ -258,7 +258,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       </div>
       <br>
       
-      <div class="category">Subplots: Streaming</div>
+      <div class="category">Plot: Streaming</div>
       <div id="myDiv"></div>
       
       <div class="category">Sensor Controls</div>
@@ -466,13 +466,6 @@ Plotly.newPlot('myDiv', data, layout);
       xmldoc = xmlResponse.getElementsByTagName("SWITCH");
       msg = xmldoc[0].firstChild.nodeValue;
       document.getElementById("switch").style.backgroundColor = "rgb(200,200,200)";
-
-      // Update the subplots
-      var update = {
-        x: [[dt], [dt]],
-        y: [[msg_V0], [msg_V1]]
-      }
-      Plotly.extendTraces('myDiv', update, [0,1])
 
       // update the text in the table
       if (msg == 0) {

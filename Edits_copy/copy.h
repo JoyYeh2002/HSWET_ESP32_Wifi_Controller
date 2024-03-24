@@ -1,13 +1,7 @@
 const char PAGE_MAIN[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html lang="en" class="js-focus-visible">
-
-<head>
-    <script src="https://cdn.plot.ly/plotly-2.30.1.min.js" charset="utf-8"></script>
-</head>
-
   <title>HWSET WIFI Turbine Dashboard</title>
-  
   <style>
     table {
       position: relative;
@@ -172,19 +166,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     table tr:last-child td:last-child {
       border-bottom-right-radius: 5px;
     }
-
-     /* Additional styles for the real-time plot */
-        #realTimePlotContainer {
-            width: 80%;
-            margin: 0 auto;
-            padding-top: 50px;
-        }
-
-        #realTimePlotCanvas {
-            width: 100%;
-            height: 400px; /* Adjust height as needed */
-        }
-
   </style>
 
   <body style="background-color: #efefef" onload="process()">
@@ -257,10 +238,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </table>
       </div>
       <br>
-      
-      <div class="category">Subplots: Streaming</div>
-      <div id="myDiv"></div>
-      
       <div class="category">Sensor Controls</div>
       <br>
       <div class="bodytext">LED </div>
@@ -281,80 +258,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
     <footer div class="foot" id="temp">ESP32 Web Page Creation and Data Update Demo </div>
     </footer>
+
   </body>
-    
+  
   <script type="text/javascript">
-     
-     
-  /*
-  function rand() {
-    return Math.random();
-  }
-  
-  var time = new Date();
-  var data = [{
-    x: [time],
-    y: [rand()],
-    mode: 'lines',
-    line: {color: '#80CAF6'}
-  }]
-
-  Plotly.newPlot('plot-stream', data); */
-  
-  // --------------------------------------------
-function rand() {
-  return Math.random();
-}
-
-var time = new Date();
-
-// Define 2 traces
-var trace1 = {
-  x: [],
-  y: [],
-  mode: 'lines',
-  line: {
-    color: '#80CAF6',
-    shape: 'spline'
-  },
-  name: 'A0'
-}
-
-var trace2 = {
-  x: [],
-  y: [],
-  xaxis: 'x2',
-  yaxis: 'y2',
-  mode: 'lines',
-  line: {color: '#DF56F1'},
-  name: 'A1'
-};
-
-// Make sub-plot layout
-var layout = {
-  xaxis: {
-    type: 'date',
-    domain: [0, 1],
-    showticklabels: false
-  },
-  yaxis: {domain: [0.6,1]},
-  xaxis2: {
-    type: 'date',
-    anchor: 'y2',
-    domain: [0, 1]
-  },
-  yaxis2: {
-    anchor: 'x2',
-    domain: [0, 0.4]},
-}
-
-// Create the canvas
-var data = [trace1,trace2];
-Plotly.newPlot('myDiv', data, layout);
-// --------------------------------------------
-
-  var cnt = 0;
-    
     // global variable visible to all java functions
     var xmlHttp = createXmlHttpObject();
 
@@ -394,15 +301,7 @@ Plotly.newPlot('myDiv', data, layout);
 
     // function to handle the response from the ESP
     function response() {
-    
-    // I want "plot-stream" to update here, so that it can plot a random number every second (when var dt updates)
-      var msg_B0;
-      var msg_B1;
-      var msg_V0;
-      var msg_V1;
-
-      var msg;
-
+      var message;
       var barwidth;
       var currentsensor;
       var xmlResponse;
@@ -417,65 +316,61 @@ Plotly.newPlot('myDiv', data, layout);
       document.getElementById("time").innerHTML = dt.toLocaleTimeString();
       document.getElementById("date").innerHTML = dt.toLocaleDateString();
 
-      // B0
+      // A0
       xmldoc = xmlResponse.getElementsByTagName("B0"); //bits for A0
-      msg_B0 = xmldoc[0].firstChild.nodeValue;
-      if (msg_B0 > 2048) {
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message > 2048) {
         color = "#aa0000";
       } else {
         color = "#0000aa";
       }
-      barwidth = msg_B0 / 40.95;
-      document.getElementById("b0").innerHTML = msg_B0;
+
+      barwidth = message / 40.95;
+      document.getElementById("b0").innerHTML = message;
       document.getElementById("b0").style.width = (barwidth + "%");
       
-      // V0
       xmldoc = xmlResponse.getElementsByTagName("V0"); //volts for A0
-      msg_V0 = xmldoc[0].firstChild.nodeValue;
-      document.getElementById("v0").innerHTML = msg_V0;
+      message = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("v0").innerHTML = message;
       document.getElementById("v0").style.width = (barwidth + "%");
+
+      // you can set color dynamically, maybe blue below a value, red above
       document.getElementById("v0").style.backgroundColor = color;
       
-      // B1
+      // A1
       xmldoc = xmlResponse.getElementsByTagName("B1");
-      msg_B1 = xmldoc[0].firstChild.nodeValue;
-      if (msg_B1 > 2048) {
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message > 2048) {
         color = "#aa0000";
       } else {
         color = "#0000aa";
       }
-      document.getElementById("b1").innerHTML = msg_B1;
-      width = msg_B1 / 40.95;
+
+      document.getElementById("b1").innerHTML = message;
+      width = message / 40.95;
       document.getElementById("b1").style.width = (width + "%");
       document.getElementById("b1").style.backgroundColor = color;
 
-      // V1
       xmldoc = xmlResponse.getElementsByTagName("V1");
-      msg_V1 = xmldoc[0].firstChild.nodeValue;
-      document.getElementById("v1").innerHTML = msg_V1;
+      message = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("v1").innerHTML = message;
       document.getElementById("v1").style.width = (width + "%");
       document.getElementById("v1").style.backgroundColor = color;
 
       xmldoc = xmlResponse.getElementsByTagName("LED");
-      msg = xmldoc[0].firstChild.nodeValue;
-      if (msg == 0) {
+
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message == 0) {
         document.getElementById("btn0").innerHTML = "Turn ON";
       } else {
         document.getElementById("btn0").innerHTML = "Turn OFF";
       }
       xmldoc = xmlResponse.getElementsByTagName("SWITCH");
-      msg = xmldoc[0].firstChild.nodeValue;
+      message = xmldoc[0].firstChild.nodeValue;
       document.getElementById("switch").style.backgroundColor = "rgb(200,200,200)";
 
-      // Update the subplots
-      var update = {
-        x: [[dt], [dt]],
-        y: [[msg_V0], [msg_V1]]
-      }
-      Plotly.extendTraces('myDiv', update, [0,1])
-
       // update the text in the table
-      if (msg == 0) {
+      if (message == 0) {
         document.getElementById("switch").innerHTML = "Switch is OFF";
         document.getElementById("btn1").innerHTML = "Turn ON";
         document.getElementById("switch").style.color = "#0000AA";
@@ -484,7 +379,6 @@ Plotly.newPlot('myDiv', data, layout);
         document.getElementById("btn1").innerHTML = "Turn OFF";
         document.getElementById("switch").style.color = "#00AA00";
       }
-
     }
     
     function process() {
