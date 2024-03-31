@@ -534,8 +534,8 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     Trace1: ${trace1.name},, Trace2: ${trace2.name},\n
     trace1.x, trace1.y, trace2.x, trace2.y`;
     for (let i = 0; i < trace1.x.length; i++) {
-      let x1 = trace1.x[i].toLocaleTimeString()
-      let x2 = trace2.x[i].toLocaleTimeString()
+      let x1 = trace1.x[i].toLocaleTimeString('en-US')
+      let x2 = trace2.x[i].toLocaleTimeString('en-US')
 
       csvData += `\n${x1}, ${trace1.y[i]}, ${x2}, ${trace2.y[i]}`;
     }
