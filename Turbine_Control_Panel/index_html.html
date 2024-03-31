@@ -527,10 +527,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
   }
 
   function downloadTracesAsCSV() {
-    // trace1.y & trace2.x/y should all be the same length 
-    let csvData = "trace1.x, trace1.y, trace2.x, trace2.y";
+    // trace1.y & trace2.x/y should all be the same length
+    let today = new Date();
+    let csvData = `
+    HSWET Turbine Dashboard Download,${today}\n
+    Trace1: ${trace1.name},, Trace2: ${trace2.name},\n
+    trace1.x, trace1.y, trace2.x, trace2.y`;
     for (let i = 0; i < trace1.x.length; i++) {
-      csvData += `\n${trace1.x[i]}, ${trace1.y[i]}, ${trace2.x[i]}, ${trace2.y[i]}`;
+      let x1 = trace1.x[i].toLocaleTimeString()
+      let x2 = trace2.x[i].toLocaleTimeString()
+
+      csvData += `\n${x1}, ${trace1.y[i]}, ${x2}, ${trace2.y[i]}`;
     }
     let url = generateCSVUrl(csvData)
 
