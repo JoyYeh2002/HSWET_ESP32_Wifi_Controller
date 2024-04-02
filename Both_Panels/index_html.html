@@ -243,6 +243,19 @@ section {
   text-align: center;
 }
 
+.chart-container {
+    width: 100%;
+    height: 100%; /* Set the desired height */
+    border: 1px solid #ccc; /* Optional: Add a border for visualization */
+    box-sizing: border-box; /* Ensure padding and border are included in the total height */
+    overflow: hidden; /* Hide any overflow content */
+  }
+
+  .rpm-chart, .pwr-chart, .wind-speed-chart{
+    width: 100%;
+    height: 100%; /* Use 100% height to fill the parent container */
+  }
+
 /* title + data value */
 .data-box {
     display: flex;
@@ -385,11 +398,9 @@ input[type="text"] {
     height: 35px; /* Set the height to your desired value */
     text-align: center;/* Add any other styling you want for all text input fields */
     width: 6rem;
+    font-size:16px;
 }
 
-input[type="text"]{
-  font-size:16px;
-}
 
 .send-btn, .stop-btn, .download-btn {
   background-color: #3498db;
@@ -468,70 +479,14 @@ footer {
   </header>
 
   <main class="container" style="margin-top:70px">
-    <div style="border-radius: 10px !important;">
-      <table style="width:50%">
-        <colgroup>
-          <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
-        </colgroup>
-        <col span="2" style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2" style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2" style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <tr>
-          <th colspan="1">
-            <div class="heading">Pin</div>
-          </th>
-          <th colspan="1">
-            <div class="heading">Bits</div>
-          </th>
-          <th colspan="1">
-            <div class="heading">Volts</div>
-          </th>
-        </tr>
-        <tr>
-          <td>
-            <div class="bodytext">A0: Analog pin 10</div>
-          </td>
-          <td>
-            <div class="tabledata" id="b0"></div>
-          </td>
-          <td>
-            <div class="tabledata" id="v0"></div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="bodytext">A1: Analog pin 17</div>
-          </td>
-          <td>
-            <div class="tabledata" id="b1"></div>
-          </td>
-          <td>
-            <div class="tabledata" id="v1"></div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="bodytext">Digital switch</div>
-          </td>
-          <td>
-            <div class="tabledata" id="switch"></div>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <br>
-
-    <div class="category">Subplots: Streaming</div>
-    <div id="myDiv"></div>
-
+  
     <div class="category">Sensor Controls</div>
-    <br>
-    <div class="bodytext">LED </div>
-    <button type="button" class="btn" id="btn0" onclick="ButtonPress0()">Toggle</button>
-    </div>
-    <br>
+  <div id="b0"></div>
+  <div id="v0"></div>
+  <div id="b1"></div>
+  <div id="v1"></div>
+  <div id="switch"></div>
+
     <div class="bodytext">Switch</div>
     <button type="button" class="btn" id="btn1" onclick="ButtonPress1()">Toggle</button>
     </div>
@@ -549,7 +504,8 @@ footer {
   <header>
     <div class="data-display-box" id="title-estop">
       <h3>E-Stop Button</h3>
-      <p id="safety-state" class="stop-btn">STOP</p>
+      <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
+      <!-- <p id="safety-state" class="stop-btn">STOP</p> -->
     </div>
     <h3 id="title">Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
   </header>
@@ -568,7 +524,7 @@ footer {
             <p id="wind-speed-value" class="data-value">0 m/s</p>
         </div>
         <div class="chart-container">
-        <div class="wind-speed-chart"></div>
+          <div id="wind-speed-chart" class="chart"></div>
         </div>
       </div>
 
@@ -578,7 +534,7 @@ footer {
             <p id="rpm-value" class="data-value">0</p>
         </div>
         <div class="chart-container">
-          <div class="rpm-chart"></div>
+          <div id="rpm-chart" class="chart"></div>
         </div>
       </div>
 
@@ -589,7 +545,7 @@ footer {
         </div>
         
         <div class="chart-container">
-          <div class="pwr-chart"></div> 
+          <div id="pwr-chart" class="chart"></div> 
         </div>
       </div>
 
@@ -620,8 +576,6 @@ footer {
         send-op-mode, send-i-load, send-blade-pitch
         radio-button-msg, load-current-msg, blade-pitch-msg
     -->
-
-
     <section class="controls">
 
       <div class="control-box">
@@ -671,7 +625,7 @@ footer {
 
     <!-- Time stamp and stuff -->
     <div class="timestamp">
-      <p id="date-time" class="msg"></p>
+      <p id="date-time" class="msg">MM-DD-YYYY</p>
       <p id="test-duration", class="msg">Test Duration: 0 mins, 0 sec</p>
     </div>
 
@@ -713,16 +667,6 @@ class = msg -->
     name: 'A0 Voltage'
   }
 
-  var trace2 = {
-    x: [],
-    y: [],
-    xaxis: 'x2',
-    yaxis: 'y2',
-    mode: 'lines',
-    line: { color: '#DF56F1' },
-    name: 'A1 Voltage'
-  };
-
   // Make sub-plot layout
   var layout = {
     xaxis: { // The top x axis
@@ -734,26 +678,15 @@ class = msg -->
       domain: [0.6, 1],
       range: [0, 3.3],
       tickformat: '.2f'
-     },
-    xaxis2: {
-      type: 'date',
-      anchor: 'y2',
-      domain: [0, 1],
-      showticklabels: true,
-      tickformat: '%H:%M:%S' 
-    },
-    yaxis2: {
-      anchor: 'x2',
-      domain: [0, 0.4],
-      range: [0, 3.3],
-      tickformat: '.2f'
-    },
-    title: 'Plotting started at ' + new Date().toLocaleTimeString('en-US')
+     }
   }
 
   // Create the canvas
-  var data = [trace1, trace2];
-  Plotly.newPlot('myDiv', data, layout, { displayModeBar: false });
+  var data = [trace1];
+  Plotly.newPlot('wind-speed-chart', data, layout, { displayModeBar: false });
+  Plotly.newPlot('rpm-chart', data, layout, { displayModeBar: false });
+  Plotly.newPlot('pwr-chart', data, layout, { displayModeBar: false });
+  
   // --------------------------------------------
 
   var cnt = 0;
@@ -838,6 +771,7 @@ class = msg -->
     msg_V0 = xmldoc[0].firstChild.nodeValue;
     document.getElementById("v0").innerHTML = msg_V0;
     document.getElementById("wind-speed-value").textContent = msg_V0 + " m/s";
+    document.getElementById("wind-speed-value").style.color = color;
 
     document.getElementById("v0").style.width = (barwidth + "%");
     document.getElementById("v0").style.backgroundColor = color;
@@ -852,6 +786,8 @@ class = msg -->
     }
     document.getElementById("b1").innerHTML = msg_B1;
     document.getElementById("rpm-value").textContent = msg_B1;
+    document.getElementById("rpm-value").style.color = color;
+
 
     width = msg_B1 / 40.95;
     document.getElementById("b1").style.width = (width + "%");
@@ -861,15 +797,20 @@ class = msg -->
     xmldoc = xmlResponse.getElementsByTagName("V1");
     msg_V1 = xmldoc[0].firstChild.nodeValue;
     document.getElementById("v1").innerHTML = msg_V1;
+    document.getElementById("pwr-value").textContent = msg_V1 + " W";
+
     document.getElementById("v1").style.width = (width + "%");
     document.getElementById("v1").style.backgroundColor = color;
+
+    document.getElementById("pwr-value").style.color = color;
+
 
     xmldoc = xmlResponse.getElementsByTagName("LED");
     msg = xmldoc[0].firstChild.nodeValue;
     if (msg == 0) {
-      document.getElementById("btn0").innerHTML = "Turn ON";
+      document.getElementById("btn0").textContent = "Turn ON";
     } else {
-      document.getElementById("btn0").innerHTML = "Turn OFF";
+      document.getElementById("btn0").textContent = "Turn OFF";
     }
     xmldoc = xmlResponse.getElementsByTagName("SWITCH");
     msg = xmldoc[0].firstChild.nodeValue;
@@ -878,10 +819,12 @@ class = msg -->
     // Plots: Update
     var x_axis_interval = 100;
     var update = {
-      x: [[dt], [dt]],
-      y: [[msg_V0], [msg_V1]]
+      x: [dt],
+      y: [msg_V0]
     }
-    Plotly.extendTraces('myDiv', update, [0, 1], x_axis_interval)
+    Plotly.extendTraces('wind-speed-chart', update, [0, 1], x_axis_interval)
+    Plotly.extendTraces('rpm-chart', update, [0, 1], x_axis_interval)
+    Plotly.extendTraces('pwr-chart', update, [0, 1], x_axis_interval)
 
     // update the text in the table
     if (msg == 0) {
