@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HWSET Turbine Control Panel</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <header>
+    <h2>Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h2>
+  </header>
+  <main>
+    <!-- Tags: 
+    text: 
+        wind-speed-value, rpm-value, pwr-value
+
+    charts:
+        wind-speed-chart, rpm-chart, pwr-chart
+    -->
+    <section class="data-charts">
+      <div class="chart-box">
+        <div class="data-box">
+            <h3>Wind Speed</h3>
+            <p id="wind-speed-value" class="data-value">9.1 m/s</p>
+        </div>
+        <div class="chart-container">
+        <div class="wind-speed-chart"></div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="data-box">
+            <h3>RPM</h3>
+            <p id="rpm-value" class="data-value">252</p>
+        </div>
+        <div class="chart-container">
+          <div class="rpm-chart"></div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="data-box">
+            <h3>Output PWR</h3>
+            <p id="pwr-value" class="data-value">15 W</p>
+        </div>
+        
+        <div class="chart-container">
+          <div class="pwr-chart"></div> 
+        </div>
+      </div>
+
+      <!-- Put 2 state displays here -->
+
+      <!-- Tags: 
+    text: 
+        safety-state, backup-pwr-state
+    JS update: 
+        toggle-state
+    -->
+
+      <div class="left-display-box">
+        <div class="data-display-box">
+            <h3>Safety State</h3>
+            <p id="safety-state" class="toggle-state"> OFF</p>
+        </div>
+
+        <div class="data-display-box">
+            <h3>Backup PWR</h3>
+            <p id="backup-pwr-state" class="toggle-state"> OFF</p>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- Messages: 
+        send-op-mode, send-i-load, send-blade-pitch
+        radio-button-msg, load-current-msg, blade-pitch-msg
+    -->
+
+    <section class="controls">
+      <div class="control-box">
+        <div class="input-btn-flex">
+            <h3>Modes of Operation </h3>
+            <button id="send-op-mode" class="send-btn">SEND</button>
+        
+        </div>
+        
+        <div class="radio-group">
+            <div class="radio-display-box">
+                <input type="radio" id="pwr-optimization" name="mode" checked>
+                <label for="pwr-optimization">PWR Optimization</label>
+            </div>
+         
+            <div class="radio-display-box">
+                <input type="radio" id="durability" name="mode">
+                <label for="durability">Durability</label>
+            </div>
+                
+            <div class="radio-display-box">
+                <input type="radio" id="rated-pwr" name="mode">
+                <label for="rated-pwr">Rated PWR</label>
+            </div>
+        </div>
+        
+        <p id="radio-button-msg" class="msg">SUCCESS: Mode set to "".</p>
+      </div>
+
+      <!-- HHYYYYYYYYYYYYYYYYYYYYYYYYYYY-->
+ <div class="control-box">
+  <h3>Load Current (0-2A): <span id="load-current-value">0</span> A</h3>
+  <div class="input-btn-flex">
+    <input type="text" id="new-load-value" placeholder="current (A)">
+    <button id="send-i-load" class="send-btn">SEND</button>
+  </div>
+  <p id="load-current-msg" class="msg">SUCCESS: Measured <span id="measured-load-value">1.765</span> A.</p>
+</div>
+
+<div class="control-box">
+  <h3>Blade Pitch (0-5): <span id="load-blade-pitch">0</span></h3>
+  <div class="input-btn-flex">
+    <input type="text" id="new-blade-pitch" placeholder="pitch state (0-5)">
+    <button id="send-blade-pitch" class="send-btn">SEND</button>
+  </div>
+  <p id="blade-pitch-msg" class="msg">SUCCESS: blade pitch is set to 3.</p>
+</div>
+
+
+      <div class="data-display-box">
+        <h3>E-Stop Button</h3>
+        <p id="safety-state" class="toggle-state">STOP</p>
+    </div>
+      
+    </section>
+  </main>
+
+  <!-- Tags: 
+    time-stamp, test-duration 
+class = msg -->
+  <footer>
+    <div class="timestamp">
+      <p id="time-stamp", class="msg">Time Stamp: 03-31-2024 23:32:41</p>
+    </div>
+
+    <div class="test-duration">
+      <p id="test-duration", class="msg">Test Duration: 5 mins, 36 sec</p>
+    </div>
+
+    <button class="download-btn">Download Data Report</button>
+    <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
+  </footer>
+</body>
+</html>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+  // Get elements
+  const loadCurrentValue = document.getElementById('load-current-value');
+  const newLoadValueInput = document.getElementById('new-load-value');
+  const sendButton = document.getElementById('send-i-load');
+  const measuredLoadValue = document.getElementById('measured-load-value');
+  const loadCurrentMsg = document.getElementById('load-current-msg');
+
+  // Update value when SEND button is clicked
+  sendButton.addEventListener('click', function() {
+    // Get the new value from the input
+    const newValue = parseFloat(newLoadValueInput.value);
+
+    // Check if the input value is a valid float between 0 and 2
+    if (!isNaN(newValue) && newValue >= 0 && newValue <= 2) {
+      // Update the displayed value and success message
+      loadCurrentValue.textContent = newValue.toFixed(1); // Display one decimal place
+      measuredLoadValue.textContent = newValue.toFixed(3); // Update the measured value with more decimal places
+      loadCurrentMsg.textContent = `SUCCESS: Measured ${newValue.toFixed(3)} A.`;
+
+      // Clear the input field
+      newLoadValueInput.value = '';
+    } else {
+      // Invalid input, display error message
+      loadCurrentMsg.textContent = 'ERROR: Invalid input. Please try again.';
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Get elements
+  const bladePitchValue = document.getElementById('load-blade-pitch');
+  const newBladePitchInput = document.getElementById('new-blade-pitch');
+  const sendBladePitchButton = document.getElementById('send-blade-pitch');
+  const bladePitchMsg = document.getElementById('blade-pitch-msg');
+
+  // Update value when SEND button is clicked
+  sendBladePitchButton.addEventListener('click', function() {
+    // Get the new value from the input and parse it as an integer
+    const newPitch = parseInt(newBladePitchInput.value);
+
+    // Check if the input value is a valid integer
+    if (!isNaN(newPitch) && Number.isInteger(newPitch) && newPitch >= 0 && newPitch <= 5) {
+      // Update the displayed value and success message
+      bladePitchValue.textContent = newPitch; // Display the integer value
+      bladePitchMsg.textContent = `SUCCESS: Blade pitch is set to ${newPitch}.`;
+
+      // Clear the input field
+      newBladePitchInput.value = '';
+    } else {
+      // Invalid input, display error message
+      bladePitchMsg.textContent = 'ERROR: Invalid input. Please enter an integer value between 0 and 5.';
+    }
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Get elements
+  const radioButtons = document.querySelectorAll('input[name="mode"]');
+  const radioMsg = document.getElementById('radio-button-msg');
+
+  // Add event listeners to radio buttons
+  radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+      const selectedRadio = document.querySelector('input[name="mode"]:checked');
+      if (selectedRadio) {
+        const selectedLabel = selectedRadio.nextElementSibling.textContent;
+        radioMsg.textContent = `SUCCESS: Mode set to "${selectedLabel}".`;
+      }
+    });
+  });
+});
+
+
+
+</script>

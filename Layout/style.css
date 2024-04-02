@@ -1,0 +1,217 @@
+/* Reset some default styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+}
+
+main {
+  max-width: 96vw;
+  margin: 0.5rem auto;
+  
+  display: grid;
+  grid-template-columns: 64.5% 35%; 
+  gap: 0.5rem;
+}
+
+.left-display-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+section {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.chart-box {
+  text-align: center;
+}
+
+/* title + data value */
+
+.data-box {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+}
+    
+.data-value {
+    margin-left: 10px; /* Adjust margin as needed */
+    color: green;
+}
+
+/* Left column bottom right, also used in radio buttons */
+
+.data-display-box {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 2px;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.radio-display-box {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 2px;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover style for radio buttons */
+.radio-display-box:hover {
+    background-color: rgb(192, 230, 239);; /* Change to darker gray on hover */
+}
+  
+  
+
+/* Safety and back-up power on or off */
+.toggle-state {
+    background-color: #f9f9f9;
+    padding: 3px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: black;
+    background-color: #fac8c8;
+}
+
+.chart-container {
+  width: 100%;
+  height: 22vh;
+  background-color: #f0f0f0;
+  margin-bottom: 10px;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+  background-color: #e0e0e0;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.control-box {
+  background-color: #f9f9f9;
+  
+  padding: 10px; /* Add padding to the entire control box */
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.control-box h3{
+    margin-bottom: 0.5rem;
+}
+
+.input-btn-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+
+input[type="text"] {
+    height: 35px; /* Set the height to your desired value */
+    text-align: center;/* Add any other styling you want for all text input fields */
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    gap: 1rem;
+}
+  
+.radio-group label {
+    display: flex;
+    align-items: center; 
+    margin: 0.5rem;
+}
+
+.radio-group input[type="radio"] {
+    transform: scale(1.2); /* Increase the size of the radio buttons */
+    margin-left: 15px; /* Add some spacing between radio buttons and labels */
+}
+
+.send-btn, .stop-btn, .download-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.send-btn:hover, .download-btn:hover {
+  background-color: #2577ae;
+}
+
+.msg {
+    color: green;
+}
+
+
+
+.stop-btn {
+  background-color: #e74c3c;
+}
+
+.stop-btn:hover {
+  background-color: #c0392b;
+}
+
+.green {
+  color: #27ae60;
+}
+
+footer {
+  background-color: #fff;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}
