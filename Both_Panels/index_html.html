@@ -837,7 +837,7 @@ class = msg -->
     xmldoc = xmlResponse.getElementsByTagName("V0"); //volts for A0
     msg_V0 = xmldoc[0].firstChild.nodeValue;
     document.getElementById("v0").innerHTML = msg_V0;
-    document.getElementById("wind-speed-value").textContent = msg_V0;
+    document.getElementById("wind-speed-value").textContent = msg_V0 + " m/s";
 
     document.getElementById("v0").style.width = (barwidth + "%");
     document.getElementById("v0").style.backgroundColor = color;
@@ -851,7 +851,7 @@ class = msg -->
       color = "#0000aa";
     }
     document.getElementById("b1").innerHTML = msg_B1;
-    document.getElementById("rpm").innerHTML = msg_B1;
+    document.getElementById("rpm-value").textContent = msg_B1;
 
     width = msg_B1 / 40.95;
     document.getElementById("b1").style.width = (width + "%");

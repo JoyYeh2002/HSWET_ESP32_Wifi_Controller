@@ -463,21 +463,11 @@ footer {
 <body style="background-color: #efefef" onload="process()">
   <header>
     <div class="navbar fixed-top">
-      <div class="container">
-        <div class="navtitle">Sensor Monitor</div>
-        <div class="navdata" id="date">mm/dd/yyyy</div>
-        <div class="navheading">DATE</div>
-        <br>
-        <div class="navdata" id="time">00:00:00</div>
-        <div class="navheading">TIME</div>
-      </div>
+     <!-- could put fixed title? not needed-->
     </div>
   </header>
 
   <main class="container" style="margin-top:70px">
-    <div class="category">Turbine Sensor Readings</div>
-    <div class="msg" id="date02">mm/dd/yyyy</div> 
-    <div class="msg" id="time02">00:00:00</div>
     <div style="border-radius: 10px !important;">
       <table style="width:50%">
         <colgroup>
@@ -827,9 +817,6 @@ class = msg -->
     xmlResponse = xmlHttp.responseXML;
 
     // get host date and time
-    document.getElementById("time02").textContent = dt.toLocaleTimeString();
-    document.getElementById("date02").textContent = dt.toLocaleDateString();
-
     formattedTime = dt.toLocaleTimeString();
     formattedDate = dt.toLocaleDateString();
     document.getElementById("date-time").textContent = "Time: " + formattedDate + " " + formattedTime;
@@ -850,7 +837,7 @@ class = msg -->
     xmldoc = xmlResponse.getElementsByTagName("V0"); //volts for A0
     msg_V0 = xmldoc[0].firstChild.nodeValue;
     document.getElementById("v0").innerHTML = msg_V0;
-    document.getElementById("wind-speed-value").textContent = msg_V0;
+    document.getElementById("wind-speed-value").textContent = msg_V0 + " m/s";
 
     document.getElementById("v0").style.width = (barwidth + "%");
     document.getElementById("v0").style.backgroundColor = color;
@@ -864,7 +851,7 @@ class = msg -->
       color = "#0000aa";
     }
     document.getElementById("b1").innerHTML = msg_B1;
-    document.getElementById("rpm").innerHTML = msg_B1;
+    document.getElementById("rpm-value").textContent = msg_B1;
 
     width = msg_B1 / 40.95;
     document.getElementById("b1").style.width = (width + "%");
