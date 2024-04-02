@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h2>Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h2>
+    <h3>Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
   </header>
   <main>
     <!-- Tags: 
@@ -82,29 +82,28 @@
     <section class="controls">
       <div class="control-box">
         <div class="input-btn-flex">
-            <h3>Modes of Operation </h3>
-            <button id="send-op-mode" class="send-btn">SEND</button>
+            <h3>Operation Mode </h3>
+            <button id="send-op-mode" class="send-btn">CONFIGURE</button>
         
         </div>
-        
         <div class="radio-group">
             <div class="radio-display-box">
                 <input type="radio" id="pwr-optimization" name="mode" checked>
-                <label for="pwr-optimization">PWR Optimization</label>
+                <label for="pwr-optimization">PWR OPTI</label>
             </div>
          
             <div class="radio-display-box">
                 <input type="radio" id="durability" name="mode">
-                <label for="durability">Durability</label>
+                <label for="durability">DURABILITY</label>
             </div>
                 
             <div class="radio-display-box">
                 <input type="radio" id="rated-pwr" name="mode">
-                <label for="rated-pwr">Rated PWR</label>
+                <label for="rated-pwr">RATED PWR</label>
             </div>
         </div>
         
-        <p id="radio-button-msg" class="msg">SUCCESS: Mode set to "".</p>
+        <p id="radio-button-msg" class="msg">Choose a mode, then click on "CONFIGURE".</p>
       </div>
 
       <!-- HHYYYYYYYYYYYYYYYYYYYYYYYYYYY-->
@@ -126,19 +125,12 @@
   <p id="blade-pitch-msg" class="msg">SUCCESS: blade pitch is set to 3.</p>
 </div>
 
-
       <div class="data-display-box">
         <h3>E-Stop Button</h3>
         <p id="safety-state" class="toggle-state">STOP</p>
     </div>
       
-    </section>
-  </main>
-
-  <!-- Tags: 
-    time-stamp, test-duration 
-class = msg -->
-  <footer>
+    <!-- Time stamp and stuff -->
     <div class="timestamp">
       <p id="time-stamp", class="msg">Time Stamp: 03-31-2024 23:32:41</p>
     </div>
@@ -149,6 +141,15 @@ class = msg -->
 
     <button class="download-btn">Download Data Report</button>
     <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
+
+    </section>
+  </main>
+
+  <!-- Tags: 
+    time-stamp, test-duration 
+class = msg -->
+  <footer>
+   <p> Version 1.0.0.</p>
   </footer>
 </body>
 </html>
@@ -214,17 +215,29 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   // Get elements
   const radioButtons = document.querySelectorAll('input[name="mode"]');
-  const radioMsg = document.getElementById('radio-button-msg');
+  const sendButton = document.getElementById('send-op-mode');
+  const radioMsg = document.getElementById('radio-button-msg'); // Updated variable
 
   // Add event listeners to radio buttons
   radioButtons.forEach(radio => {
-    radio.addEventListener('change', function() {
+      radio.addEventListener('change', function() {
+          const selectedRadio = document.querySelector('input[name="mode"]:checked');
+          if (selectedRadio) {
+              const selectedLabel = selectedRadio.nextElementSibling.textContent;
+              // Do not update console message here
+          }
+      });
+  });
+
+  // Add event listener to send button
+  sendButton.addEventListener('click', function() {
       const selectedRadio = document.querySelector('input[name="mode"]:checked');
       if (selectedRadio) {
-        const selectedLabel = selectedRadio.nextElementSibling.textContent;
-        radioMsg.textContent = `SUCCESS: Mode set to "${selectedLabel}".`;
+          const selectedLabel = selectedRadio.nextElementSibling.textContent;
+          radioMsg.textContent = `SUCCESS: Mode set to "${selectedLabel}".`; // Update console message here
+      } else {
+          radioMsg.textContent = 'ERROR: Please select a mode.';
       }
-    });
   });
 });
 

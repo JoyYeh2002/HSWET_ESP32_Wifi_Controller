@@ -13,16 +13,15 @@ body {
 header {
   background-color: #3498db;
   color: #fff;
-  padding: 15px;
+  padding: 8px;
   text-align: center;
 }
 
 main {
   max-width: 96vw;
   margin: 0.5rem auto;
-  
   display: grid;
-  grid-template-columns: 64.5% 35%; 
+  grid-template-columns: 62% 37.5%; 
   gap: 0.5rem;
 }
 
@@ -70,15 +69,39 @@ section {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+
+.radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  
+}
+
+/* .radio-group label {
+  display: flex;
+  align-items: center; 
+  margin: 0.5rem;
+} */
+
+.radio-group input[type="radio"] {
+  transform: scale(1.2); /* Increase the size of the radio buttons */
+  /* margin-left: 15px; Add some spacing between radio buttons and labels */
+}
+
 .radio-display-box {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center;
     background-color: #f9f9f9;
-    padding: 2px;
     border-radius: 5px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    gap: 0.5rem;
+    
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 0.3rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -87,8 +110,6 @@ section {
     background-color: rgb(192, 230, 239);; /* Change to darker gray on hover */
 }
   
-  
-
 /* Safety and back-up power on or off */
 .toggle-state {
     background-color: #f9f9f9;
@@ -145,23 +166,6 @@ input[type="text"] {
     text-align: center;/* Add any other styling you want for all text input fields */
 }
 
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    margin: 1rem;
-    gap: 1rem;
-}
-  
-.radio-group label {
-    display: flex;
-    align-items: center; 
-    margin: 0.5rem;
-}
-
-.radio-group input[type="radio"] {
-    transform: scale(1.2); /* Increase the size of the radio buttons */
-    margin-left: 15px; /* Add some spacing between radio buttons and labels */
-}
 
 .send-btn, .stop-btn, .download-btn {
   background-color: #3498db;
