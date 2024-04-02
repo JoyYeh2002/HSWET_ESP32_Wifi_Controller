@@ -11,17 +11,28 @@ body {
 }
 
 header {
+  max-width: 96vw;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
   background-color: #3498db;
-  color: #fff;
   padding: 8px;
   text-align: center;
+
+  display: grid;
+  grid-template-columns: 30% 60%; 
+  
+  #title {
+    color: white;
+    margin-top: 4px;
+    font-size: 1.3rem;
+  }
 }
 
 main {
   max-width: 96vw;
   margin: 0.5rem auto;
   display: grid;
-  grid-template-columns: 62% 37.5%; 
+  grid-template-columns: 60% 39.5%; 
   gap: 0.5rem;
 }
 
@@ -43,11 +54,15 @@ section {
 }
 
 /* title + data value */
-
 .data-box {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center;
+}
+
+.data-box p {
+  font-size:18px;
+  font-weight: bold;
 }
     
 .data-value {
@@ -56,7 +71,6 @@ section {
 }
 
 /* Left column bottom right, also used in radio buttons */
-
 .data-display-box {
     display: flex;
     justify-content: center; /* Center horizontally */
@@ -67,8 +81,17 @@ section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    #title-estop {
+    margin-left: 20rem;
+    padding-left: 20rem;
+    }
 }
 
+.data-display-box p {
+  font-size:16px;
+  font-weight: bold;
+}
 
 .radio-group {
   display: flex;
@@ -76,14 +99,7 @@ section {
   gap: 0.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  
 }
-
-/* .radio-group label {
-  display: flex;
-  align-items: center; 
-  margin: 0.5rem;
-} */
 
 .radio-group input[type="radio"] {
   transform: scale(1.2); /* Increase the size of the radio buttons */
@@ -142,7 +158,6 @@ section {
 
 .control-box {
   background-color: #f9f9f9;
-  
   padding: 10px; /* Add padding to the entire control box */
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -160,12 +175,31 @@ section {
     margin-bottom: 0.5rem;
 }
 
+.input-btn-flex > * {
+  flex-grow: 0;
+  flex-basis: 50%; /* First element takes up 45% */
+  max-width: 50%; /* Optional: Set max-width to ensure responsiveness */
+}
+
+.input-btn-flex > :nth-child(2),
+.input-btn-flex > :nth-child(3) {
+  flex-basis: 20%; /* Second and third elements take up 25% each */
+  max-width: 25%; /* Optional: Set max-width to ensure responsiveness */
+}
+
+.input-btn-flex h3 {
+  margin-top: 10px; /* Add some margin to the right of the heading */
+}
 
 input[type="text"] {
     height: 35px; /* Set the height to your desired value */
     text-align: center;/* Add any other styling you want for all text input fields */
+    width: 6rem;
 }
 
+input[type="text"]{
+  font-size:16px;
+}
 
 .send-btn, .stop-btn, .download-btn {
   background-color: #3498db;
@@ -174,20 +208,20 @@ input[type="text"] {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  text-align: center;
   transition: background-color 0.3s ease;
+  
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
 .send-btn:hover, .download-btn:hover {
   background-color: #2577ae;
 }
 
-.msg {
-    color: green;
-}
-
-
-
 .stop-btn {
+  padding: 5px 20px;
   background-color: #e74c3c;
 }
 
@@ -195,8 +229,18 @@ input[type="text"] {
   background-color: #c0392b;
 }
 
-.green {
-  color: #27ae60;
+.msg {
+  color: green;
+}
+
+.timestamp {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.timestamp p{
+  margin-top: 5px;
 }
 
 footer {
