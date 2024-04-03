@@ -9,183 +9,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 <title>HWSET WIFI Turbine Dashboard</title>
 
 <style>
-  table {
-    position: relative;
-    width: 100%;
-    border-spacing: 0px;
-  }
-
-  tr {
-    border: 1px solid white;
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 20px;
-  }
-
-  th {
-    height: 20px;
-    padding: 3px 15px;
-    background-color: #343a40;
-    color: #FFFFFF !important;
-  }
-
-  td {
-    height: 20px;
-    padding: 3px 15px;
-  }
-
-  .tabledata {
-    font-size: 24px;
-    position: relative;
-    padding-left: 5px;
-    padding-top: 5px;
-    height: 25px;
-    border-radius: 5px;
-    color: #FFFFFF;
-    line-height: 20px;
-    transition: all 200ms ease-in-out;
-    background-color: #00AA00;
-  }
-
-  .fanrpmslider {
-    width: 30%;
-    height: 55px;
-    outline: none;
-    height: 25px;
-  }
-
-  .bodytext {
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 24px;
-    text-align: left;
-    font-weight: light;
-    border-radius: 5px;
-    display: inline;
-  }
-
-  .navbar {
-    width: 100%;
-    height: 50px;
-    margin: 0;
-    padding: 10px 0px;
-    background-color: #FFF;
-    color: #000000;
-    border-bottom: 5px solid #293578;
-  }
-
-  .fixed-top {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 1030;
-  }
-
-  .navtitle {
-    float: left;
-    height: 50px;
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 50px;
-    font-weight: bold;
-    line-height: 50px;
-    padding-left: 20px;
-  }
-
-  .navheading {
-    position: fixed;
-    left: 60%;
-    height: 50px;
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 20px;
-    padding-right: 20px;
-  }
-
-  .navdata {
-    justify-content: flex-end;
-    position: fixed;
-    left: 70%;
-    height: 50px;
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 20px;
-    padding-right: 20px;
-  }
-
-  .category {
-    font-family: "Verdana", "Arial", sans-serif;
-    font-weight: bold;
-    font-size: 32px;
-    line-height: 50px;
-    padding: 20px 10px 0px 10px;
-    color: #000000;
-  }
-
-  .heading {
-    font-family: "Verdana", "Arial", sans-serif;
-    font-weight: normal;
-    font-size: 28px;
-    text-align: left;
-  }
-
-  .btn {
-    background-color: #444444;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-
-  .foot {
-    font-family: "Verdana", "Arial", sans-serif;
-    font-size: 20px;
-    position: relative;
-    height: 30px;
-    text-align: center;
-    color: #AAAAAA;
-    line-height: 20px;
-  }
-
-  .container {
-    max-width: 1800px;
-    margin: 0 auto;
-  }
-
-  table tr:first-child th:first-child {
-    border-top-left-radius: 5px;
-  }
-
-  table tr:first-child th:last-child {
-    border-top-right-radius: 5px;
-  }
-
-  table tr:last-child td:first-child {
-    border-bottom-left-radius: 5px;
-  }
-
-  table tr:last-child td:last-child {
-    border-bottom-right-radius: 5px;
-  }
-
-  /* Additional styles for the real-time plot */
-  #realTimePlotContainer {
-    width: 80%;
-    margin: 0 auto;
-    padding-top: 50px;
-  }
-
-  #realTimePlotCanvas {
-    width: 100%;
-    height: 400px;
-    /* Adjust height as needed */
-  }
-
 
   /* NEW STYLE STARTS HEREEEEEE */
   /* Reset some default styles */
@@ -468,11 +291,11 @@ footer {
 
   <main class="container" style="margin-top:70px">
   
-  <div id="b0"></div>
+  <!-- <div id="b0"></div>
   <div id="v0"></div>
   <div id="b1"></div>
   <div id="v1"></div>
-  
+   -->
 
     
     <br>
@@ -616,13 +439,6 @@ footer {
 
     </section>
   </main>
-
-  <!-- Tags: 
-    time-stamp, test-duration 
-  class = msg -->
-  <footer>
-   <p> Version 1.0.0.</p>
-  </footer>
 </body>
 
 <script type="text/javascript">
@@ -641,7 +457,6 @@ footer {
   mode: 'lines',
   line: {
       color: '#80CAF6',
-      shape: 'spline'
     },
     name: 'A0 Voltage'
   }]
@@ -650,7 +465,7 @@ footer {
   var vw = window.innerWidth * 0.55;
   var vh = 150; 
 
-  var layout = {
+  var baseLayout = {
     width: vw,
     height: vh,
     margin: {
@@ -671,14 +486,19 @@ footer {
     yaxis: { 
       domain: [0, 1],
       range: [0, 3.3],
-      tickformat: '.2f'
+      tickformat: '.2f',
+      yticks: [0, 1, 3, 3.3]
     }
   }
 
+  var layout_ws = Object.assign({}, baseLayout, { yaxis: { range: [0, 3.3] } });
+  var layout_rpm = Object.assign({}, baseLayout, { yaxis: { range: [0, 1000]}, yticks: [0, 300, 600, 1000] } );
+  var layout_pwr = Object.assign({}, baseLayout, { yaxis: { range: [0, 10]}, yticks: [0, 2, 4, 6, 8, 10] } );
 
-  Plotly.newPlot('wind-speed-chart', data, layout, { displayModeBar: false });
-  Plotly.newPlot('rpm-chart', data, layout, { displayModeBar: false });
-  Plotly.newPlot('pwr-chart', data, layout, { displayModeBar: false });
+  Plotly.newPlot('wind-speed-chart', data, layout_ws, { displayModeBar: false });
+  Plotly.newPlot('rpm-chart', data, layout_rpm, { displayModeBar: false });
+  Plotly.newPlot('pwr-chart', data, layout_pwr, { displayModeBar: false });
+
   
   // --------------------------------------------
 
@@ -720,12 +540,11 @@ footer {
   function response() {
 
     // I want "plot-stream" to update here, so that it can plot a random number every second (when var dt updates)
-    var msg_B0;
     var msg_B1;
     var msg_V0;
     var msg_V1;
 
-    var msg;
+    var msg; // stop light
 
     var barwidth;
     var currentsensor;
@@ -742,54 +561,32 @@ footer {
     formattedDate = dt.toLocaleDateString();
     document.getElementById("date-time").textContent = "Time: " + formattedDate + " " + formattedTime;
     
-    // B0
-    xmldoc = xmlResponse.getElementsByTagName("B0"); //bits for A0
-    msg_B0 = xmldoc[0].firstChild.nodeValue;
-    if (msg_B0 > 2048) {
+    // V0
+    xmldoc = xmlResponse.getElementsByTagName("wind-speed");  
+    msg_V0 = xmldoc[0].firstChild.nodeValue;
+
+   
+
+    if (msg_V0 > 0.5) {
       color = "#aa0000";
     } else {
       color = "#0000aa";
     }
-    barwidth = msg_B0 / 40.95;
-    document.getElementById("b0").innerHTML = msg_B0;
-    document.getElementById("b0").style.width = (barwidth + "%");
 
-    // V0
-    xmldoc = xmlResponse.getElementsByTagName("V0"); //volts for A0
-    msg_V0 = xmldoc[0].firstChild.nodeValue;
-    document.getElementById("v0").innerHTML = msg_V0;
     document.getElementById("wind-speed-value").textContent = msg_V0 + " m/s";
     document.getElementById("wind-speed-value").style.color = color;
-
-    document.getElementById("v0").style.width = (barwidth + "%");
-    document.getElementById("v0").style.backgroundColor = color;
-
+    
     // B1
-    xmldoc = xmlResponse.getElementsByTagName("B1");
+    xmldoc = xmlResponse.getElementsByTagName("rpm");
     msg_B1 = xmldoc[0].firstChild.nodeValue;
-    if (msg_B1 > 2048) {
-      color = "#aa0000";
-    } else {
-      color = "#0000aa";
-    }
-    document.getElementById("b1").innerHTML = msg_B1;
+
     document.getElementById("rpm-value").textContent = msg_B1;
     document.getElementById("rpm-value").style.color = color;
 
-
-    width = msg_B1 / 40.95;
-    document.getElementById("b1").style.width = (width + "%");
-    document.getElementById("b1").style.backgroundColor = color;
-
     // V1
-    xmldoc = xmlResponse.getElementsByTagName("V1");
+    xmldoc = xmlResponse.getElementsByTagName("pwr");
     msg_V1 = xmldoc[0].firstChild.nodeValue;
-    document.getElementById("v1").innerHTML = msg_V1;
     document.getElementById("pwr-value").textContent = msg_V1 + " W";
-
-    document.getElementById("v1").style.width = (width + "%");
-    document.getElementById("v1").style.backgroundColor = color;
-
     document.getElementById("pwr-value").style.color = color;
 
 
@@ -807,14 +604,26 @@ footer {
 
     // Plots: Update
     var x_axis_interval = 200;
-    var update = {
+
+    var update_ws = {
       x: [[dt]],
-      y: [[msg_V0]]
+      y: [[rand()]]
+    }
+    
+    var update_rpm = {
+      x: [[dt]],
+      y: [[msg_B1]]
     }
 
-    Plotly.extendTraces('wind-speed-chart', update, [0], x_axis_interval)
-    Plotly.extendTraces('rpm-chart', update, [0], x_axis_interval)
-    Plotly.extendTraces('pwr-chart', update, [0], x_axis_interval)
+    var update_pwr = {
+      x: [[dt]],
+      y: [[msg_V1]]
+    }
+   
+    
+    Plotly.extendTraces('wind-speed-chart', update_ws, [0], x_axis_interval)
+    Plotly.extendTraces('rpm-chart', update_rpm, [0], x_axis_interval)
+    Plotly.extendTraces('pwr-chart', update_rpm, [0], x_axis_interval)
 
     // update the text in the table
     if (msg == 0) {
