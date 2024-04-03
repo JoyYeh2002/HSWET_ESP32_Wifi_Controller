@@ -289,25 +289,6 @@ footer {
 <!-- NORMAL SENSOR MONITOR -->
 <body style="background-color: #efefef" onload="process()">
 
-  <main class="container" style="margin-top:70px">
-  
-  <!-- <div id="b0"></div>
-  <div id="v0"></div>
-  <div id="b1"></div>
-  <div id="v1"></div>
-   -->
-
-    
-    <br>
-    <br>
-    <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>) </div>
-    <br>
-    <input type="range" class="fanrpmslider" min="0" max="255" value="0" width="0%"
-      oninput="UpdateSlider(this.value)" />
-    <br>
-    <br>
-  </main>
-
   <!-- MY HTML STARTS HERE -->
   <header>
     <div class="data-display-box" id="title-estop">
@@ -524,18 +505,6 @@ footer {
     xhttp.send();
   }
 
-  function UpdateSlider(value) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        // update the web based on reply from  ESP
-        document.getElementById("fanrpm").innerHTML = this.responseText;
-      }
-    }
-    xhttp.open("PUT", "UPDATE_SLIDER?VALUE=" + value, true);
-    xhttp.send();
-  }
-
   // function to handle the response from the ESP
   function response() {
 
@@ -621,7 +590,7 @@ footer {
     }
    
     
-    Plotly.extendTraces('wind-speed-chart', update_ws, [0], x_axis_interval)
+    Plotly.extendTraces('wind-speed-chart', update_rpm, [0], x_axis_interval)
     Plotly.extendTraces('rpm-chart', update_rpm, [0], x_axis_interval)
     Plotly.extendTraces('pwr-chart', update_rpm, [0], x_axis_interval)
 
