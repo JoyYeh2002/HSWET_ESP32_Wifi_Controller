@@ -251,7 +251,7 @@ section {
     overflow: hidden; /* Hide any overflow content */
   }
 
-  .rpm-chart, .pwr-chart, .wind-speed-chart{
+  .chart{
     width: 100%;
     height: 100%; /* Use 100% height to fill the parent container */
   }
@@ -340,17 +340,10 @@ section {
     background-color: #fac8c8;
 }
 
-.chart-container {
-  width: 100%;
-  height: 22vh;
-  background-color: #f0f0f0;
-  margin-bottom: 10px;
-}
 
 .chart {
   width: 100%;
-  height: 100%;
-  background-color: #e0e0e0;
+  height: 100%; /* Fill the entire height of the chart container */
 }
 
 .controls {
@@ -472,24 +465,16 @@ footer {
 
 <!-- NORMAL SENSOR MONITOR -->
 <body style="background-color: #efefef" onload="process()">
-  <header>
-    <div class="navbar fixed-top">
-     <!-- could put fixed title? not needed-->
-    </div>
-  </header>
 
   <main class="container" style="margin-top:70px">
   
-    <div class="category">Sensor Controls</div>
   <div id="b0"></div>
   <div id="v0"></div>
   <div id="b1"></div>
   <div id="v1"></div>
-  <div id="switch"></div>
+  
 
-    <div class="bodytext">Switch</div>
-    <button type="button" class="btn" id="btn1" onclick="ButtonPress1()">Toggle</button>
-    </div>
+    
     <br>
     <br>
     <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>) </div>
@@ -523,9 +508,9 @@ footer {
             <h3>Wind Speed: </h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
         </div>
-        <div class="chart-container">
+        
           <div id="wind-speed-chart" class="chart"></div>
-        </div>
+        
       </div>
 
       <div class="chart-box">
@@ -533,9 +518,9 @@ footer {
             <h3>RPM: </h3>
             <p id="rpm-value" class="data-value">0</p>
         </div>
-        <div class="chart-container">
+        
           <div id="rpm-chart" class="chart"></div>
-        </div>
+       
       </div>
 
       <div class="chart-box">
@@ -543,10 +528,7 @@ footer {
             <h3>Output PWR: </h3>
             <p id="pwr-value" class="data-value">0 W</p>
         </div>
-        
-        <div class="chart-container">
           <div id="pwr-chart" class="chart"></div> 
-        </div>
       </div>
 
       <!-- Put 2 state displays here -->
@@ -637,12 +619,9 @@ footer {
 
   <!-- Tags: 
     time-stamp, test-duration 
-class = msg -->
+  class = msg -->
   <footer>
    <p> Version 1.0.0.</p>
-  </footer>
-
-  <footer div class="foot" id="temp">ESP32 Web Page Creation and Data Update Demo </div>
   </footer>
 </body>
 
@@ -656,33 +635,47 @@ class = msg -->
   var time = new Date();
   
   // Define 2 traces
-  var trace1 = {
-    x: [],
-    y: [],
-    mode: 'lines',
-    line: {
+  var data = [{
+  x: [time],
+  y: [rand()],
+  mode: 'lines',
+  line: {
       color: '#80CAF6',
       shape: 'spline'
     },
     name: 'A0 Voltage'
-  }
+  }]
 
   // Make sub-plot layout
+  var vw = window.innerWidth * 0.55;
+  var vh = 150; 
+
   var layout = {
-    xaxis: { // The top x axis
+    width: vw,
+    height: vh,
+    margin: {
+    t: 0,  // top margin
+    b: 40, // bottom margin
+    l: 35, // left margin
+    r: 10  // right margin
+    },
+    
+    xaxis: {
       type: 'date',
-      domain: [0, 1],
-      showticklabels: false
+      tickformat: '%H:%M:%S', // Set the tick format for time values
+      tickmode: 'linear', // Use linear tick mode for consistent tick spacing
+      tick0: new Date().getTime(), // Start the ticks from the current time
+      dtick: 5000, // Set the tick interval to 5s
+      showticklabels: true // Show tick labels
     },
     yaxis: { 
-      domain: [0.6, 1],
+      domain: [0, 1],
       range: [0, 3.3],
       tickformat: '.2f'
-     }
+    }
   }
 
-  // Create the canvas
-  var data = [trace1];
+
   Plotly.newPlot('wind-speed-chart', data, layout, { displayModeBar: false });
   Plotly.newPlot('rpm-chart', data, layout, { displayModeBar: false });
   Plotly.newPlot('pwr-chart', data, layout, { displayModeBar: false });
@@ -704,15 +697,10 @@ class = msg -->
     return xmlHttp;
   }
 
+  /* This is E-Stop */
   function ButtonPress0() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_0", false);
-    xhttp.send();
-  }
-
-  function ButtonPress1() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("PUT", "BUTTON_1", false);
     xhttp.send();
   }
 
@@ -807,34 +795,32 @@ class = msg -->
 
     xmldoc = xmlResponse.getElementsByTagName("LED");
     msg = xmldoc[0].firstChild.nodeValue;
+
+    // Red LED on pin 13 also toggles
     if (msg == 0) {
-      document.getElementById("btn0").textContent = "Turn ON";
+      document.getElementById("btn0").textContent = "STOP";
+      document.getElementById("btn0").style.backgroundColor = "#a2a2a2";
     } else {
-      document.getElementById("btn0").textContent = "Turn OFF";
+      document.getElementById("btn0").textContent = "STOPPED";
+      document.getElementById("btn0").style.backgroundColor = "#e74c3c";
     }
-    xmldoc = xmlResponse.getElementsByTagName("SWITCH");
-    msg = xmldoc[0].firstChild.nodeValue;
-    document.getElementById("switch").style.backgroundColor = "rgb(200,200,200)";
 
     // Plots: Update
-    var x_axis_interval = 100;
+    var x_axis_interval = 200;
     var update = {
-      x: [dt],
-      y: [msg_V0]
+      x: [[dt]],
+      y: [[msg_V0]]
     }
-    Plotly.extendTraces('wind-speed-chart', update, [0, 1], x_axis_interval)
-    Plotly.extendTraces('rpm-chart', update, [0, 1], x_axis_interval)
-    Plotly.extendTraces('pwr-chart', update, [0, 1], x_axis_interval)
+
+    Plotly.extendTraces('wind-speed-chart', update, [0], x_axis_interval)
+    Plotly.extendTraces('rpm-chart', update, [0], x_axis_interval)
+    Plotly.extendTraces('pwr-chart', update, [0], x_axis_interval)
 
     // update the text in the table
     if (msg == 0) {
-      document.getElementById("switch").innerHTML = "Switch is OFF";
       document.getElementById("btn1").innerHTML = "Turn ON";
-      document.getElementById("switch").style.color = "#0000AA";
     } else {
-      document.getElementById("switch").innerHTML = "Switch is ON";
       document.getElementById("btn1").innerHTML = "Turn OFF";
-      document.getElementById("switch").style.color = "#00AA00";
     }
 
   }
@@ -845,7 +831,7 @@ class = msg -->
       xmlHttp.onreadystatechange = response;
       xmlHttp.send(null);
     }
-    setTimeout("process()", 200);
+    setTimeout("process()", 400);
   }
 
   // MY JS STARTS HERE ---------------------------------------

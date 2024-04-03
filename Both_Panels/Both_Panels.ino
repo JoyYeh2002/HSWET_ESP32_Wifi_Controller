@@ -186,13 +186,6 @@ void SendXML() {
     strcat(XML, "<LED>0</LED>\n");
   }
 
-  if (SomeOutput) {
-    strcat(XML, "<SWITCH>1</SWITCH>\n");
-  }
-  else {
-    strcat(XML, "<SWITCH>0</SWITCH>\n");
-  }
-
   strcat(XML, "</Data>\n");
   server.send(200, "text/xml", XML);
 
