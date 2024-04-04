@@ -62,22 +62,43 @@ section {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.chart-box {
-  text-align: center;
+
+.charts-and-titles {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    height: 80vh; /* 70% of viewport height */
 }
 
-.chart-container {
+.chart-box {
     width: 100%;
-    height: 100%; /* Set the desired height */
-    border: 1px solid #ccc; /* Optional: Add a border for visualization */
-    box-sizing: border-box; /* Ensure padding and border are included in the total height */
-    overflow: hidden; /* Hide any overflow content */
-  }
+    height: 100%;
+    border: 1px solid black; /* Just for visualization */
+    grid-column: 1; /* Place in the first column (60%) */
+}
 
-  .chart{
-    width: 100%;
-    height: 100%; /* Use 100% height to fill the parent container */
-  }
+.chart-text-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    grid-column: 2; /* Place in the first column (60%) */
+}
+
+.chart-textbox {
+    height: calc(30% - 10px); /* 33% of the height with spacing */
+    border-radius: 5px;
+    background-color: rgb(192, 230, 239);
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none; /* Remove border */
+    padding: 10px; /* Add padding for content spacing */
+}
+
+
+.chart{
+  width: 100%;
+  height: 100%; /* Use 100% height to fill the parent container */
+}
 
 /* title + data value */
 .data-box {
@@ -149,7 +170,7 @@ section {
 
 /* Hover style for radio buttons */
 .radio-display-box:hover {
-    background-color: rgb(192, 230, 239);; /* Change to darker gray on hover */
+    background-color: rgb(192, 230, 239); /* Change to darker gray on hover */
 }
   
 /* Safety and back-up power on or off */
@@ -307,10 +328,32 @@ footer {
         wind-speed-chart, rpm-chart, pwr-chart
     -->
     <section class="data-charts">
-      <div class="chart-box">
-          <div id="charts" class="chart"></div>
-      </div>
 
+      <div class="charts-and-titles">
+        <!-- charts on left column -->
+        <div class="chart-box">
+            <div id="charts" class="chart"></div>
+        </div>
+
+        <!-- tags on right column -->
+        <div class="chart-text-column">
+          <div class="chart-textbox">
+            <h3>Wind Speed: </h3>
+            <p id="wind-speed-value" class="data-value">0 m/s</p>
+          </div>
+          
+          <div class="chart-textbox">
+            <h3>RPM: </h3>
+            <p id="rpm-value" class="data-value">0</p>
+          </div>
+        
+          <div class="chart-textbox">
+            <h3>PWR: </h3>
+            <p id="pwr-value" class="data-value">0 W</p>
+          </div>
+        </div>
+      </div>
+   
       <div class="left-display-box">
         <div class="data-display-box">
             <h3>Safety State</h3>
@@ -380,9 +423,6 @@ footer {
       <p id="test-duration", class="msg">Test Duration: 0 mins, 0 sec</p>
     </div>
 
-    <p id="wind-speed-value">0</p>
-    <p id="rpm-value">0</p>
-    <p id="pwr-value">0</p>
 
     <button class="download-btn">Download Data Report</button>
     <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
@@ -407,7 +447,8 @@ footer {
     line: {
       color: '#80CAF6',
       shape: 'spline'
-    }
+    },
+    showlegend: false
   }
   
   var trace2 = {
@@ -416,7 +457,8 @@ footer {
     xaxis: 'x2',
     yaxis: 'y2',
     mode: 'lines',
-    line: {color: '#DF56F1'}
+    line: {color: '#DF56F1'},
+    showlegend: false
   };
   
   var trace3 = {
@@ -425,16 +467,17 @@ footer {
     xaxis: 'x3',
     yaxis: 'y3',
     mode: 'lines',
-    line: {color: '#9a9a9a'}
+    line: {color: '#9a9a9a'},
+    showlegend: false
   };
   
 
-  var vw = window.innerWidth * 0.55;
-  var vh = 550; // put 3 plots together
+  var vw = window.innerWidth * 0.40;
+  var vh = 500; // put 3 plots together
 
   // Define scaling constant for subplot height and spacing
   var plotHeight = 0.22; // Adjust for desired subplot height (0 to 1)
-  var plotSpacing = 0.1; 
+  var plotSpacing = 0.11; 
 
   var layout = {
     width: vw,
@@ -448,47 +491,50 @@ footer {
 
     xaxis: { // WIND SPEED
       type: 'date', 
-      tickformat: '%H:%M:%S', // Set the tick format for time values
-      tickmode: 'linear', // Use linear tick mode for consistent tick spacing
-      tick0: new Date().getTime(), // Start the ticks from the current time
-      dtick: 5000, // Set the tick interval to 5s
-      showticklabels: true, // Show tick labels
-      domain: [0, 1]
+      tickformat: '%H:%M:%S', 
+      tickmode: 'linear', 
+      tick0: new Date().getTime(), 
+      dtick: 5000, 
+      showticklabels: true, 
+      domain: [0, 1],
+	  showticklabels: false
     },
     yaxis: {
       domain: [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2], // 0.5, 0.7
       range: [0, 3.4],
       tickformat: '.2f',
       tickmode: 'array',
-      tickvals: [0, 1, 3, 3.3]
+      tickvals: [0, 1, 2, 3.3]
     },
 
     xaxis2: { // RPM
       type: 'date', 
       anchor: 'y2', 
-      tickformat: '%H:%M:%S', // Set the tick format for time values
-      tickmode: 'linear', // Use linear tick mode for consistent tick spacing
-      tick0: new Date().getTime(), // Start the ticks from the current time
-      dtick: 5000, // Set the tick interval to 5s
-      showticklabels: true, // Show tick labe
-      domain: [0, 1]
+      tickformat: '%H:%M:%S', 
+      tickmode: 'linear', 
+      tick0: new Date().getTime(), 
+      dtick: 5000, 
+      showticklabels: true, 
+      domain: [0, 1],
+	  showticklabels: false
+
     },
     yaxis2: {
       anchor: 'x2', 
       domain: [plotHeight + plotSpacing, plotHeight * 2 + plotSpacing], //0.25, 0.45 P2
-      range: [0, 510],
+      range: [0, 2000],
       tickmode: 'array',
-      tickvals: [0, 100, 300, 500]
+      tickvals: [0, 500, 1000, 1500, 2000]
     },
 
     xaxis3: { // PWR
       type: 'date', 
       anchor: 'y3', 
-      tickformat: '%H:%M:%S', // Set the tick format for time values
-      tickmode: 'linear', // Use linear tick mode for consistent tick spacing
-      tick0: new Date().getTime(), // Start the ticks from the current time
-      dtick: 5000, // Set the tick interval to 5s
-      showticklabels: true, // Show tick labe
+      tickformat: '%H:%M:%S', 
+      tickmode: 'linear', 
+      tick0: new Date().getTime(), 
+      dtick: 5000, 
+      showticklabels: true, 
       domain: [0, 1]
     },
     yaxis3: {
@@ -500,45 +546,11 @@ footer {
     }
   }
 
-  
-  var ws_plot_title = {
-    x: 0.5, 
-    y: plotHeight * 3 + plotSpacing * 2,
-    xref: 'paper', 
-    yref: 'paper',
-    text: "Wind Speed: " + document.getElementById("wind-speed-value").textContent + "m/s",
-    showarrow: false // Hide arrow for cleaner look
-  };
-
-    var rpm_plot_title = {
-    x: 0.5, 
-    y: plotHeight * 2 + plotSpacing,
-    xref: 'paper', 
-    yref: 'paper',
-    text: "RPM: " + document.getElementById("rpm-value").textContent,
-    showarrow: false // Hide arrow for cleaner look
-  };
-
-  var pwr_plot_title = {
-    x: 0.5, 
-    y: plotHeight,
-    xref: 'paper',
-    yref: 'paper',
-    text: "OUTPUT POWER: " + document.getElementById("pwr-value").textContent + "W",
-    showarrow: false // Hide arrow for cleaner look
-  };
-  
-  // Add annotation to layout
-  layout.annotations = [pwr_plot_title, rpm_plot_title, ws_plot_title];
-
   var data = [trace1,trace2,trace3]; 
-  
-  // Plotly.plot('charts', data, layout);  
   Plotly.newPlot('charts', data, layout, { displayModeBar: false });
   
   var cnt = 0;
   
-
   // global variable visible to all java functions
   var xmlHttp = createXmlHttpObject();
 
@@ -588,8 +600,6 @@ footer {
     xmldoc = xmlResponse.getElementsByTagName("wind-speed");  
     msg_V0 = xmldoc[0].firstChild.nodeValue;
 
-   
-
     if (msg_V0 > 0.5) {
       color = "#aa0000";
     } else {
@@ -630,7 +640,7 @@ footer {
 
     var update = {
       x: [[dt], [dt], [dt]],
-      y: [[rand() * 3.3], [rand() * 500], [rand() * 10]]
+      y: [[msg_V0], [msg_B1], [msg_V1]]
     }
     
     Plotly.extendTraces('charts', update, [0,1,2], x_axis_interval)

@@ -11,7 +11,8 @@ function rand() {
     line: {
       color: '#80CAF6',
       shape: 'spline'
-    }
+    },
+	 showlegend: false 
   }
   
   var trace2 = {
@@ -20,7 +21,8 @@ function rand() {
     xaxis: 'x2',
     yaxis: 'y2',
     mode: 'lines',
-    line: {color: '#DF56F1'}
+    line: {color: '#DF56F1'},
+	 showlegend: false 
   };
   
   var trace3 = {
@@ -29,16 +31,17 @@ function rand() {
     xaxis: 'x3',
     yaxis: 'y3',
     mode: 'lines',
-    line: {color: '#9a9a9a'}
+    line: {color: '#9a9a9a'},
+	 showlegend: false 
   };
   
 
   var vw = window.innerWidth * 0.55;
-  var vh = 500; // put 3 plots together
+  var vh = 550; // put 3 plots together
 
   // Define scaling constant for subplot height and spacing
   var plotHeight = 0.22; // Adjust for desired subplot height (0 to 1)
-  var plotSpacing = 0.1; 
+  var plotSpacing = 0.11; 
 
   var layout = {
     width: vw,
@@ -57,7 +60,8 @@ function rand() {
       tick0: new Date().getTime(), // Start the ticks from the current time
       dtick: 5000, // Set the tick interval to 5s
       showticklabels: true, // Show tick labels
-      domain: [0, 1]
+      domain: [0, 1],
+		 showticklabels: false
     },
     yaxis: {
       domain: [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2], // 0.5, 0.7
@@ -75,7 +79,8 @@ function rand() {
       tick0: new Date().getTime(), // Start the ticks from the current time
       dtick: 5000, // Set the tick interval to 5s
       showticklabels: true, // Show tick labe
-      domain: [0, 1]
+      domain: [0, 1],
+		showticklabels: false
     },
     yaxis2: {
       anchor: 'x2', 
@@ -104,10 +109,9 @@ function rand() {
     }
   }
 
-  
   var ws_plot_title = {
     x: 0.5, 
-    y: plotHeight * 3 + plotSpacing * 2,
+    y: plotHeight * 3 + plotSpacing * 3,
     xref: 'paper', 
     yref: 'paper',
     text: "Wind Speed: " + document.getElementById("wind-speed-value").textContent + "m/s",
