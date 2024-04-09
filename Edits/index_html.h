@@ -461,14 +461,14 @@ footer {
   <p id="blade-pitch-msg" class="msg">CONFIG: Please enter blade pitch state.</p>
 </div>
 
-    <!-- Time stamp and stuff -->
+    <!-- Time stamp and download button -->
     <div class="timestamp">
       <p id="date-time" class="msg">MM-DD-YYYY</p>
       <p id="test-duration", class="msg">Test Duration: 0 mins, 0 sec</p>
     </div>
 
+    <button type="button" class="download-btn" id="downloadTraces" onclick="downloadTracesAsCSV()">DOWNLOAD DATA CSV</button>
 
-    <button class="download-btn">DOWNLOAD DATA REPORT</button>
     <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
 
     </section>
@@ -608,6 +608,36 @@ footer {
     return xmlHttp;
   }
 
+  // ----------------- DOWNLOAD BUTTON -------------------
+ // global variable to hold URL to file to be downloaded (see generateCSVUrl())
+ let csvFileUrl = null;
+
+// Function for generating a text file URL containing given text
+function generateCSVUrl(txt) {
+    let fileData = new Blob([txt], {type: 'text/csv'});
+    // If a file has been previously generated, revoke the existing URL
+    if (csvFileUrl !== null) {
+        window.URL.revokeObjectURL(textFile);
+    }
+    csvFileUrl = window.URL.createObjectURL(fileData);
+    // Returns a reference to the global variable holding the URL
+    // Again, this is better than generating and returning the URL itself from the function as it will eat memory if the file contents are large or regularly changing
+    return csvFileUrl;
+};
+
+// Function for downloading file from URI
+function downloadURI(uri, name) {
+  let link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  delete link;
+}
+
+  // -----------------------------------------------------
+
   /* This is E-Stop */
   function ButtonPress0() {
     var xhttp = new XMLHttpRequest();
@@ -706,6 +736,26 @@ footer {
     }
     setTimeout("process()", 400);
   }
+
+
+  function downloadTracesAsCSV() {
+    // trace1.y & trace2.x/y should all be the same length
+    let today = new Date();
+    let csvData = `
+    HSWET Turbine Dashboard Download,${today}\n
+    Trace1: ${trace1.name},, Trace2: ${trace2.name},\n
+    trace1.x, trace1.y, trace2.x, trace2.y`;
+    for (let i = 0; i < trace1.x.length; i++) {
+      let x1 = trace1.x[i].toLocaleTimeString('en-US')
+      let x2 = trace2.x[i].toLocaleTimeString('en-US')
+
+      csvData += `\n${x1}, ${trace1.y[i]}, ${x2}, ${trace2.y[i]}`;
+    }
+    let url = generateCSVUrl(csvData)
+
+    downloadURI(url, "data.csv");
+  }
+
 
   // MY JS STARTS HERE ---------------------------------------
 // Button Interactions

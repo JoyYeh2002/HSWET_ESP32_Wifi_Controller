@@ -8,8 +8,9 @@
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
 
+
 const int led = 4;
-const int buffer_size = 4096;
+const int buffer_size = 2048;
 
 const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital write from the web page
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
@@ -167,15 +168,15 @@ void SendXML() {
   strcat(XML, buf);
 
   // send Volts0
-  sprintf(buf, "<wind-speed>%d.%d</wind-speed>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
+  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
   strcat(XML, buf);
 
   // send bits1
-  sprintf(buf, "<rpm>%d</rpm>\n", BitsA1);
+  sprintf(buf, "<B1>%d</B1>\n", BitsA1);
   strcat(XML, buf);
 
   // send Volts1
-  sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
   strcat(XML, buf);
 
   // show led0 status
@@ -186,12 +187,14 @@ void SendXML() {
     strcat(XML, "<LED>0</LED>\n");
   }
 
+  if (SomeOutput) {
+    strcat(XML, "<SWITCH>1</SWITCH>\n");
+  }
+  else {
+    strcat(XML, "<SWITCH>0</SWITCH>\n");
+  }
+
   strcat(XML, "</Data>\n");
   server.send(200, "text/xml", XML);
-
-  Serial.println(BitsA0);
-  Serial.println(',');
-  Serial.println(BitsA1);
-  
 
 }

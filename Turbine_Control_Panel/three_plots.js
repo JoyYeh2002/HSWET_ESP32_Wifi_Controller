@@ -11,8 +11,7 @@ function rand() {
     line: {
       color: '#80CAF6',
       shape: 'spline'
-    },
-	 showlegend: false 
+    }
   }
   
   var trace2 = {
@@ -21,8 +20,7 @@ function rand() {
     xaxis: 'x2',
     yaxis: 'y2',
     mode: 'lines',
-    line: {color: '#DF56F1'},
-	 showlegend: false 
+    line: {color: '#DF56F1'}
   };
   
   var trace3 = {
@@ -31,17 +29,13 @@ function rand() {
     xaxis: 'x3',
     yaxis: 'y3',
     mode: 'lines',
-    line: {color: '#9a9a9a'},
-	 showlegend: false 
+    line: {color: '#9a9a9a'}
   };
   
 
   var vw = window.innerWidth * 0.55;
-  var vh = 550; // put 3 plots together
+  var vh = 500; // put 3 plots together
 
-  // Define scaling constant for subplot height and spacing
-  var plotHeight = 0.22; // Adjust for desired subplot height (0 to 1)
-  var plotSpacing = 0.11; 
 
   var layout = {
     width: vw,
@@ -60,11 +54,10 @@ function rand() {
       tick0: new Date().getTime(), // Start the ticks from the current time
       dtick: 5000, // Set the tick interval to 5s
       showticklabels: true, // Show tick labels
-      domain: [0, 1],
-	  showticklabels: false
+      domain: [0, 1]
     },
     yaxis: {
-      domain: [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2], // 0.5, 0.7
+      domain: [0.62,0.9],
       range: [0, 3.4],
       tickformat: '.2f',
       tickmode: 'array',
@@ -79,12 +72,11 @@ function rand() {
       tick0: new Date().getTime(), // Start the ticks from the current time
       dtick: 5000, // Set the tick interval to 5s
       showticklabels: true, // Show tick labe
-      domain: [0, 1],
-	  showticklabels: false
+      domain: [0, 1]
     },
     yaxis2: {
       anchor: 'x2', 
-      domain: [plotHeight + plotSpacing, plotHeight * 2 + plotSpacing], //0.25, 0.45 P2
+      domain: [0.35, 0.55],
       range: [0, 510],
       tickmode: 'array',
       tickvals: [0, 100, 300, 500]
@@ -102,16 +94,17 @@ function rand() {
     },
     yaxis3: {
       anchor: 'x3', 
-      domain: [0, plotHeight],
+      domain: [0, 0.2],
       range: [0, 11],
       tickmode: 'array',
       tickvals: [0, 2, 4, 6, 8, 10]
     }
   }
 
+  
   var ws_plot_title = {
     x: 0.5, 
-    y: plotHeight * 3 + plotSpacing * 3,
+    y: 0.95, 
     xref: 'paper', 
     yref: 'paper',
     text: "Wind Speed: " + document.getElementById("wind-speed-value").textContent + "m/s",
@@ -120,7 +113,7 @@ function rand() {
 
     var rpm_plot_title = {
     x: 0.5, 
-    y: plotHeight * 2 + plotSpacing,
+    y: 0.65, 
     xref: 'paper', 
     yref: 'paper',
     text: "RPM: " + document.getElementById("rpm-value").textContent,
@@ -129,7 +122,7 @@ function rand() {
 
   var pwr_plot_title = {
     x: 0.5, 
-    y: plotHeight,
+    y: 0.25, 
     xref: 'paper',
     yref: 'paper',
     text: "OUTPUT POWER: " + document.getElementById("pwr-value").textContent + "W",
@@ -138,6 +131,23 @@ function rand() {
   
   // Add annotation to layout
   layout.annotations = [pwr_plot_title, rpm_plot_title, ws_plot_title];
+
+  // Define scaling constant for subplot height and spacing
+  var plotHeight = 0.3; // Adjust for desired subplot height (0 to 1)
+  var plotSpacing = 0.05; 
+
+  [0, plotHeight] // 0, 0.2 P1
+  [plotHeight, plotHeight + plotSpacing] //0.2, 0.25 T1
+
+  [plotHeight + plotSpacing, plotHeight * 2 + plotSpacing] //0.25, 0.45 P2
+  [plotHeight * 2 + plotSpacing, plotHeight * 2 + plotSpacing * 2] // 0.45, 0.5 T2
+
+  [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2] // 0.5, 0.7
+  [plotHeight * 3 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 3] // 0.45, 0.65
+
+
+  // 0.25, 0.65, 0.95
+  // 0, 0.2, 0.35, 0.55, 0.62, 0.9
 
   var data = [trace1,trace2,trace3]; 
   

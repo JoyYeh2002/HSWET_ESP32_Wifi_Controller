@@ -188,10 +188,4 @@ void SendXML() {
 
   strcat(XML, "</Data>\n");
   server.send(200, "text/xml", XML);
-
-  Serial.println(BitsA0);
-  Serial.println(',');
-  Serial.println(BitsA1);
-  
-
 }
