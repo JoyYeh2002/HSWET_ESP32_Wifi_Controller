@@ -10,8 +10,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
 <style>
 
-  /* NEW STYLE STARTS HEREEEEEE */
-  /* Reset some default styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -23,6 +21,10 @@ body {
   background-color: #f0f0f0;
 }
 
+h3 {
+  font-size: 1.05rem;
+}
+
 header {
   max-width: 96vw;
   margin: 0.5rem auto;
@@ -32,7 +34,7 @@ header {
   text-align: center;
 
   display: grid;
-  grid-template-columns: 30% 60%; 
+  grid-template-columns: 25% 65%; 
   
   #title {
     color: white;
@@ -62,18 +64,22 @@ section {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-
 .charts-and-titles {
     display: grid;
-    grid-template-columns: 75% 25%;
-    height: 80vh; /* 70% of viewport height */
+    grid-template-columns: 73% 25%;
+    column-gap: 2%;
+    height: 78vh; /* 70% of viewport height */
+    margin-bottom: 1rem;
 }
 
 .chart-box {
     width: 100%;
     height: 100%;
-    border: 1px solid black; /* Just for visualization */
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     grid-column: 1; /* Place in the first column (60%) */
+    
 }
 
 .chart-text-column {
@@ -84,11 +90,34 @@ section {
     grid-column: 2; /* Place in the first column (60%) */
 }
 
-.chart-textbox {
-    height: calc(30% - 10px); /* 33% of the height with spacing */
-    border: 1px solid black; /* Just for visualization */
-    padding: 5px;
-}
+
+    
+    .chart-textbox {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: calc(30% - 10px); /* 33% of the height with spacing */
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-textbox h3,
+    .chart-textbox p {
+      margin: 0;
+      text-align: center;
+    }
+
+    .chart-textbox h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .chart-textbox p {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
 
 .chart{
   width: 100%;
@@ -103,18 +132,17 @@ section {
 }
 
 .data-box p {
-  font-size:18px;
+  font-size:1rem;
   font-weight: bold;
 }
     
 .data-value {
-    margin-left: 10px; /* Adjust margin as needed */
-    color: green;
+  margin-left: 10px; /* Adjust margin as needed */
 }
 
 /* Left column bottom right, also used in radio buttons */
 .data-display-box {
-    display: flex;
+  
     justify-content: center; /* Center horizontally */
     align-items: center;
     background-color: #f9f9f9;
@@ -123,16 +151,25 @@ section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-    #title-estop {
-    margin-left: 20rem;
-    padding-left: 20rem;
-    }
 }
 
-.data-display-box p {
-  font-size:16px;
-  font-weight: bold;
+.stop-display-box {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  align-items: center;
+  background-color: #f9f9f9;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.stop-display-box h3 {
+  grid-column: 1;
+}
+
+.stop-display-box button {
+  grid-column: 2;
 }
 
 .radio-group {
@@ -163,11 +200,16 @@ section {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+
 /* Hover style for radio buttons */
 .radio-display-box:hover {
-    background-color: rgb(192, 230, 239); /* Change to darker gray on hover */
+  background-color: rgb(192, 230, 239); /* Change to darker gray on hover */
 }
-  
+
+.radio-display-box input[type="radio"]:checked {
+  background-color: red; /* Change to red when selected */
+}
+
 /* Safety and back-up power on or off */
 .toggle-state {
     background-color: #f9f9f9;
@@ -178,7 +220,6 @@ section {
     color: black;
     background-color: #fac8c8;
 }
-
 
 .chart {
   width: 100%;
@@ -200,6 +241,7 @@ section {
 
 .control-box h3{
     margin-bottom: 0.5rem;
+    font-size: 1.05rem;
 }
 
 .input-btn-flex {
@@ -233,34 +275,42 @@ input[type="text"] {
     font-size:16px;
 }
 
-
 .send-btn, .stop-btn, .download-btn {
   background-color: #3498db;
+  font-weight: bold;
   color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.4s ease;
   
   display: flex; /* Use flexbox */
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
 }
 
-.send-btn:hover, .download-btn:hover {
-  background-color: #2577ae;
-}
 
 .stop-btn {
-  padding: 5px 20px;
+  padding: 5px 10px;
   background-color: #e74c3c;
 }
 
 .stop-btn:hover {
   background-color: #c0392b;
 }
+
+.send-btn:hover, .download-btn:hover {
+  background-color: #2577ae;
+}
+
+.download-btn {
+  padding: 5px 3.5px;
+  background-color:#3498db;
+}
+
+
 
 .msg {
   color: green;
@@ -297,8 +347,7 @@ footer {
   }
 }
 
-/* NEW STYLE ENDS HEREEEEE 
-*/
+
 
 </style>
 
@@ -307,14 +356,14 @@ footer {
 
   <!-- MY HTML STARTS HERE -->
   <header>
-    <div class="data-display-box" id="title-estop">
-      <h3>E-Stop Button</h3>
+    <div class="stop-display-box" id="title-estop">
+      <h3>EMERGENCY STOP</h3>
       <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
-      <!-- <p id="safety-state" class="stop-btn">STOP</p> -->
     </div>
     <h3 id="title">Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
   </header>
   <main>
+
     <!-- Tags: 
     text: 
         wind-speed-value, rpm-value, pwr-value
@@ -333,17 +382,17 @@ footer {
         <!-- tags on right column -->
         <div class="chart-text-column">
           <div class="chart-textbox">
-            <h3>Wind Speed: </h3>
+            <h3>WIND SPEED </h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
           </div>
           
           <div class="chart-textbox">
-            <h3>RPM: </h3>
+            <h3>RPM </h3>
             <p id="rpm-value" class="data-value">0</p>
           </div>
         
           <div class="chart-textbox">
-            <h3>PWR: </h3>
+            <h3>POWER </h3>
             <p id="pwr-value" class="data-value">0 W</p>
           </div>
         </div>
@@ -351,12 +400,12 @@ footer {
    
       <div class="left-display-box">
         <div class="data-display-box">
-            <h3>Safety State</h3>
+            <h3>SAFETY STATE</h3>
             <p id="safety-state" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
-            <h3>Backup PWR</h3>
+            <h3>BACKUP PWR</h3>
             <p id="backup-pwr-state" class="toggle-state"> OFF</p>
         </div>
       </div>
@@ -370,7 +419,7 @@ footer {
     <section class="controls">
       <div class="control-box">
         <div class="input-btn-flex">
-            <h3>Operation Mode </h3>
+            <h3>OPERATION MODE </h3>
             <button id="send-op-mode" class="send-btn">CONFIGURE</button>
         </div>
         <div class="radio-group">
@@ -396,7 +445,7 @@ footer {
       <!-- HHYYYYYYYYYYYYYYYYYYYYYYYYYYY-->
  <div class="control-box">
   <div class="input-btn-flex">
-    <h3>Load Current (0 to 2A): </h3>
+    <h3>LOAD CURRENT (0 to 2A): </h3>
     <input type="text" id="new-load-value">
     <button id="send-i-load" class="send-btn">SEND</button>
   </div>
@@ -405,7 +454,7 @@ footer {
 
 <div class="control-box">
   <div class="input-btn-flex">
-    <h3>Blade Pitch (0 to 5):</h3>
+    <h3>BLADE PITCH (0 to 5):</h3>
     <input type="text" id="new-blade-pitch" >
     <button id="send-blade-pitch" class="send-btn">SEND</button>
   </div>
@@ -419,7 +468,7 @@ footer {
     </div>
 
 
-    <button class="download-btn">Download Data Report</button>
+    <button class="download-btn">DOWNLOAD DATA REPORT</button>
     <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
 
     </section>
@@ -631,7 +680,7 @@ footer {
     }
 
     // Plots: Update
-    var x_axis_interval = 200;
+    var x_axis_interval = 50;
 
     var update = {
       x: [[dt], [dt], [dt]],
@@ -666,10 +715,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const sendButton = document.getElementById('send-op-mode');
   const radioMsg = document.getElementById('radio-button-msg'); // Updated variable
 
-  // Add event listeners to radio buttons
-  radioButtons.forEach(radio => {
+ // Add event listeners to radio buttons
+ radioButtons.forEach(radio => {
       radio.addEventListener('change', function() {
           const selectedRadio = document.querySelector('input[name="mode"]:checked');
+          // Reset color of any previously selected label
+          
           if (selectedRadio) {
               const selectedLabel = selectedRadio.nextElementSibling.textContent;
               // Do not update console message here
@@ -680,14 +731,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add event listener to send button
   sendButton.addEventListener('click', function() {
       const selectedRadio = document.querySelector('input[name="mode"]:checked');
+
       if (selectedRadio) {
           const selectedLabel = selectedRadio.nextElementSibling.textContent;
           radioMsg.textContent = `SUCCESS: Mode set to "${selectedLabel}".`; // Update console message here
-      } else {
+          
+        } else {
           radioMsg.textContent = 'ERROR: Please select a mode.';
       }
+
   });
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
   // Get elements
@@ -698,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let previousValidValue = 0; // Variable to store the previous valid value
   let measuredValue = 0; 
 
-  // Update value when SEND button is clicked
+
   sendButton.addEventListener('click', function() {
       // Get the new value from the input
       const inputValue = newLoadValueInput.value.trim(); // Remove leading and trailing whitespace

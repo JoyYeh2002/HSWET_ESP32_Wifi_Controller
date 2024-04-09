@@ -132,8 +132,23 @@ function rand() {
   // Add annotation to layout
   layout.annotations = [pwr_plot_title, rpm_plot_title, ws_plot_title];
 
-  
-  
+  // Define scaling constant for subplot height and spacing
+  var plotHeight = 0.3; // Adjust for desired subplot height (0 to 1)
+  var plotSpacing = 0.05; 
+
+  [0, plotHeight] // 0, 0.2 P1
+  [plotHeight, plotHeight + plotSpacing] //0.2, 0.25 T1
+
+  [plotHeight + plotSpacing, plotHeight * 2 + plotSpacing] //0.25, 0.45 P2
+  [plotHeight * 2 + plotSpacing, plotHeight * 2 + plotSpacing * 2] // 0.45, 0.5 T2
+
+  [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2] // 0.5, 0.7
+  [plotHeight * 3 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 3] // 0.45, 0.65
+
+
+  // 0.25, 0.65, 0.95
+  // 0, 0.2, 0.35, 0.55, 0.62, 0.9
+
   var data = [trace1,trace2,trace3]; 
   
   Plotly.plot('graph', data, layout);  
