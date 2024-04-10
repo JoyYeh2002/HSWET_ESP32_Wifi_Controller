@@ -360,6 +360,13 @@ footer {
       <h3>EMERGENCY STOP</h3>
       <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
     </div>
+
+    <div class="stop-display-box" id="title-estop">
+      <h3>SOME BUTTON</h3>
+      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">SOME</button>
+    </div>
+
+
     <h3 id="title">Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
   </header>
   <main>
@@ -469,7 +476,7 @@ footer {
 
     <button type="button" class="download-btn" id="downloadTraces" onclick="downloadTracesAsCSV()">DOWNLOAD DATA CSV</button>
 
-    <p class="msg">SUCCESS: Data report downloaded at 23:32:41 on 03/31/2024.</p>
+    <p class="msg" id="download-msg">Press the button to download experiment results.</p>
 
     </section>
   </main>
@@ -484,7 +491,8 @@ footer {
 
   var time = new Date();
   
-  var trace1 = {
+  var trace1 = { 
+    name: 'Wind Speed (m/s)',
     x: [],
     y: [],
     mode: 'lines',
@@ -496,6 +504,7 @@ footer {
   }
   
   var trace2 = {
+    name: 'RPM',
     x: [],
     y: [],
     xaxis: 'x2',
@@ -506,6 +515,7 @@ footer {
   };
   
   var trace3 = {
+    name: 'Power (w)',
     x: [],
     y: [],
     xaxis: 'x3',
@@ -645,6 +655,38 @@ function downloadURI(uri, name) {
     xhttp.send();
   }
 
+  function ButtonPress1() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("PUT", "BUTTON_1", false);
+    xhttp.send();
+  }
+
+  function SetOperationMode(mode_str) {
+    var xhttp = new XMLHttpRequest();
+    
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        // update the web based on reply from ESP
+        radioMsg.textContent = `SUCCESS: Mode set to "${mode_str}".`; 
+      }
+    }
+  
+    if (mode_str == "PWR OPTI") {
+      xhttp.open("PUT", "PWR_OPTI", true); 
+      xhttp.send();
+    } else if (mode_str == "DURABILITY") {
+        xhttp.open("PUT", "DURABILITY", true); 
+        xhttp.send();
+    } else if (mode_str == "RATED PWR") {
+        xhttp.open("PUT", "RATED_PWR", true); 
+        xhttp.send();
+    } else {
+        radioMsg.textContent = 'ERROR: Invalid mode selected.'; 
+        return;
+    }
+  }
+
+
   // function to handle the response from the ESP
   function response() {
 
@@ -709,6 +751,19 @@ function downloadURI(uri, name) {
       document.getElementById("btn0").style.backgroundColor = "#e74c3c";
     }
 
+
+    xmldoc = xmlResponse.getElementsByTagName("SOME");
+    msg = xmldoc[0].firstChild.nodeValue;
+
+        // Red LED on pin 13 also toggles
+        if (msg == 0) {
+      document.getElementById("btn1").textContent = "YES";
+      document.getElementById("btn1").style.backgroundColor = "#f2f2f2";
+    } else {
+      document.getElementById("btn1").textContent = "NO";
+      document.getElementById("btn1").style.backgroundColor = "#3df5aa";
+    }
+
     // Plots: Update
     var x_axis_interval = 50;
 
@@ -725,7 +780,6 @@ function downloadURI(uri, name) {
     } else {
       document.getElementById("btn1").innerHTML = "Turn OFF";
     }
-
   }
 
   function process() {
@@ -737,33 +791,49 @@ function downloadURI(uri, name) {
     setTimeout("process()", 400);
   }
 
-
+// -------------------- DOWNLOAD REPORT FORMATTING ---------------
   function downloadTracesAsCSV() {
     // trace1.y & trace2.x/y should all be the same length
     let today = new Date();
-    let csvData = `
-    HSWET Turbine Dashboard Download,${today}\n
-    Trace1: ${trace1.name},, Trace2: ${trace2.name},\n
-    trace1.x, trace1.y, trace2.x, trace2.y`;
+    let csvData = `HSWET Turbine Dashboard Download,\n${today}\n
+    Time, ${trace1.name}, ${trace2.name}, ${trace3.name}\n`;
     for (let i = 0; i < trace1.x.length; i++) {
       let x1 = trace1.x[i].toLocaleTimeString('en-US')
-      let x2 = trace2.x[i].toLocaleTimeString('en-US')
-
-      csvData += `\n${x1}, ${trace1.y[i]}, ${x2}, ${trace2.y[i]}`;
+     
+      csvData += `\n${x1}, ${trace1.y[i]}, ${trace2.y[i]}, ${trace3.y[i]}`;
     }
     let url = generateCSVUrl(csvData)
 
-    downloadURI(url, "data.csv");
+    const dt = new Date();  // Create a date time object (replace with your actual object if needed)
+
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, "0"); // Month (0-indexed)
+    const day = String(dt.getDate()).padStart(2, "0");  // Day
+
+    const hours = String(dt.getHours()).padStart(2, "0");
+    const minutes = String(dt.getMinutes()).padStart(2, "0");
+
+    const formattedDateTime = `${month}_${day}_${year}_${hours}_${minutes}`;
+
+
+
+    downloadURI(url, formattedDateTime + "_turbine_data.csv");
+
+    document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedTime;
   }
 
+  // -------------------------------------------------------------
 
   // MY JS STARTS HERE ---------------------------------------
 // Button Interactions
+
+const radioMsg = document.getElementById('radio-button-msg'); // Define radioMsg globally
+
 document.addEventListener('DOMContentLoaded', function() {
   // Get elements
   const radioButtons = document.querySelectorAll('input[name="mode"]');
   const sendButton = document.getElementById('send-op-mode');
-  const radioMsg = document.getElementById('radio-button-msg'); // Updated variable
+ // const radioMsg = document.getElementById('radio-button-msg'); // Updated variable
 
  // Add event listeners to radio buttons
  radioButtons.forEach(radio => {
@@ -784,12 +854,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (selectedRadio) {
           const selectedLabel = selectedRadio.nextElementSibling.textContent;
-          radioMsg.textContent = `SUCCESS: Mode set to "${selectedLabel}".`; // Update console message here
-          
+          SetOperationMode(selectedLabel);
         } else {
           radioMsg.textContent = 'ERROR: Please select a mode.';
       }
-
   });
 });
 

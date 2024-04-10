@@ -11,15 +11,23 @@ const char *password = "ESP32_Tutorial";
 const int led = 4;
 const int buffer_size = 2048;
 
-const int PIN_OUTPUT = 26; // connected to nothing but an example of a digital write from the web page
+const int PIN_OUTPUT = 21; // connected to nothing but an example of a digital write from the web page
 const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
 const int PIN_LED = 13;     //On board LED
 const int PIN_A0 = 10;     // some analog input sensor
 const int PIN_A1 = 17;     // some analog input sensor
+const int PIN_A2 = 7;  
+
+
+const int PIN_PWR_OPTI_MODE = 16;
+const int PIN_DURABILITY_MODE = 15;
+const int PIN_RATED_PWR_MODE = 14;
+
+
 
 // variables to store measure data and sensor states
-int BitsA0 = 0, BitsA1 = 0;
-float VoltsA0 = 0, VoltsA1 = 0;
+int BitsA0 = 0, BitsA1 = 0, BitsA2 = 0;
+float VoltsA0 = 0, VoltsA1 = 0, VoltsA2 = 0;
 int FanSpeed = 0;
 bool LED0 = false, SomeOutput = false;
 uint32_t SensorUpdate = 0;
@@ -39,8 +47,21 @@ void setup(void) {
   digitalWrite(led, 0);
 
   pinMode(PIN_FAN, OUTPUT);
+
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LED0);
+
+// -----------------New Code-----------------
+  pinMode(PIN_PWR_OPTI_MODE, OUTPUT);
+  digitalWrite(PIN_PWR_OPTI_MODE, 0);
+
+  pinMode(PIN_DURABILITY_MODE, OUTPUT);
+  digitalWrite(PIN_DURABILITY_MODE, 0);
+
+  pinMode(PIN_RATED_PWR_MODE, OUTPUT);
+  digitalWrite(PIN_RATED_PWR_MODE, 0);
+// -----------------New Code-----------------
+
 
   // configure LED PWM functionalitites
   ledcSetup(0, 10000, 8);
@@ -77,6 +98,13 @@ void setup(void) {
   server.on("/BUTTON_0", ProcessButton_0);
   server.on("/BUTTON_1", ProcessButton_1);
 
+//-----------------New Code-----------------
+  server.on("/PWR_OPTI", SetPwrOptiMode);
+  server.on("/DURABILITY", SetDurabilityMode);
+  server.on("/RATED_PWR", SetRatedPwrMode);
+//-----------------New Code-----------------
+
+
   server.onNotFound(HandleNotFound);
   server.begin();
   Serial.println("HTTP server started");
@@ -89,10 +117,12 @@ void loop(void) {
     SensorUpdate = millis();
     BitsA0 = analogRead(PIN_A0);
     BitsA1 = analogRead(PIN_A1);
+    BitsA2 = analogRead(PIN_A2);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 3.3 / 4096;
-    VoltsA1 = BitsA1 * 3.3 / 4096;
+    VoltsA0 = BitsA0 * 12 / 4096; // wind speed
+    VoltsA1 = BitsA1 * 2000 / 4096; // RPM
+    VoltsA2 = BitsA2 * 20 / 4096;    // Power
 
   }
   server.handleClient();
@@ -136,9 +166,35 @@ void ProcessButton_1() {
   Serial.println("Button 1 press");
   SomeOutput = !SomeOutput;
   digitalWrite(PIN_OUTPUT, SomeOutput);
-  Serial.print("Button 1 "); Serial.println(LED0);
+  Serial.print("Button 1 "); Serial.println(SomeOutput);
   server.send(200, "text/plain", ""); //Send web page
 }
+
+// sent power optimization mode to high
+void SetPwrOptiMode() {
+  Serial.println("Set to power optimization mode");
+  digitalWrite(PIN_PWR_OPTI_MODE, 1);
+  digitalWrite(PIN_RATED_PWR_MODE, 0);
+  digitalWrite(PIN_DURABILITY_MODE, 0);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
+void SetRatedPwrMode() {
+  Serial.println("Set to rated power mode");
+  digitalWrite(PIN_RATED_PWR_MODE, 1);
+  digitalWrite(PIN_PWR_OPTI_MODE, 0);
+  digitalWrite(PIN_DURABILITY_MODE, 0);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
+void SetDurabilityMode() {
+  Serial.println("Set to durability mode");
+  digitalWrite(PIN_DURABILITY_MODE, 1);
+  digitalWrite(PIN_RATED_PWR_MODE, 0);
+  digitalWrite(PIN_PWR_OPTI_MODE, 0);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
 
 void UpdateSlider() {
   // many I hate strings, but wifi lib uses them...
@@ -171,11 +227,19 @@ void SendXML() {
   strcat(XML, buf);
 
   // send bits1
-  sprintf(buf, "<rpm>%d</rpm>\n", BitsA1);
+  sprintf(buf, "<B1>%d</B1>\n", BitsA1);
   strcat(XML, buf);
 
   // send Volts1
-  sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  sprintf(buf, "<rpm>%d.%d</rpm>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  strcat(XML, buf);
+
+  // send bits2
+  sprintf(buf, "<B2>%d</B2>\n", BitsA2);
+  strcat(XML, buf);
+
+  // send Volts2
+  sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA2), abs((int) (VoltsA2 * 10)  - ((int) (VoltsA2) * 10)));
   strcat(XML, buf);
 
   // show led0 status
@@ -185,6 +249,16 @@ void SendXML() {
   else {
     strcat(XML, "<LED>0</LED>\n");
   }
+
+
+ // show some button status
+  if (SomeOutput) {
+    strcat(XML, "<SOME>1</SOME>\n");
+  }
+  else {
+    strcat(XML, "<SOME>0</SOME>\n");
+  }
+
 
   strcat(XML, "</Data>\n");
   server.send(200, "text/xml", XML);
