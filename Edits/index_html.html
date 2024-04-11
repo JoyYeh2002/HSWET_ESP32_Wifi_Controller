@@ -362,8 +362,8 @@ footer {
     </div>
 
     <div class="stop-display-box" id="title-estop">
-      <h3>SOME BUTTON</h3>
-      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">SOME</button>
+      <h3>START EXPERIMENT</h3>
+      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">RUN TRIAL</button>
     </div>
 
 
@@ -408,12 +408,12 @@ footer {
       <div class="left-display-box">
         <div class="data-display-box">
             <h3>SAFETY STATE</h3>
-            <p id="safety-state" class="toggle-state"> OFF</p>
+            <p id="safety" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
             <h3>BACKUP PWR</h3>
-            <p id="backup-pwr-state" class="toggle-state"> OFF</p>
+            <p id="backup-pwr" class="toggle-state"> OFF</p>
         </div>
       </div>
 
@@ -555,10 +555,10 @@ footer {
     },
     yaxis: {
       domain: [plotHeight * 2 + plotSpacing * 2, plotHeight * 3 + plotSpacing * 2], // 0.5, 0.7
-      range: [0, 3.4],
+      range: [0, 12],
       tickformat: '.2f',
       tickmode: 'array',
-      tickvals: [0, 1, 2, 3.3]
+      tickvals: [0, 4, 8, 12]
     },
 
     xaxis2: { // RPM
@@ -594,9 +594,9 @@ footer {
     yaxis3: {
       anchor: 'x3', 
       domain: [0, plotHeight],
-      range: [0, 11],
+      range: [0, 20],
       tickmode: 'array',
-      tickvals: [0, 2, 4, 6, 8, 10]
+      tickvals: [0, 4, 8, 12, 16, 20]
     }
   }
 
@@ -648,16 +648,17 @@ function downloadURI(uri, name) {
 
   // -----------------------------------------------------
 
-  /* This is E-Stop */
+  // BUTTON_STOP (BUTTON_0) 
   function ButtonPress0() {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("PUT", "BUTTON_0", false);
+    xhttp.open("PUT", "BUTTON_STOP", false);
     xhttp.send();
   }
 
+  // BUTTON_RUN (BUTTON_1) 
   function ButtonPress1() {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("PUT", "BUTTON_1", false);
+    xhttp.open("PUT", "BUTTON_RUN", false);
     xhttp.send();
   }
 
@@ -739,10 +740,9 @@ function downloadURI(uri, name) {
     document.getElementById("pwr-value").style.color = color;
 
 
-    xmldoc = xmlResponse.getElementsByTagName("LED");
+    // Toggle stop button on pin 13
+    xmldoc = xmlResponse.getElementsByTagName("STOP");
     msg = xmldoc[0].firstChild.nodeValue;
-
-    // Red LED on pin 13 also toggles
     if (msg == 0) {
       document.getElementById("btn0").textContent = "STOP";
       document.getElementById("btn0").style.backgroundColor = "#a2a2a2";
@@ -751,22 +751,41 @@ function downloadURI(uri, name) {
       document.getElementById("btn0").style.backgroundColor = "#e74c3c";
     }
 
-
-    xmldoc = xmlResponse.getElementsByTagName("SOME");
+    // Toggle exp run button on pin 21
+    xmldoc = xmlResponse.getElementsByTagName("RUN");
     msg = xmldoc[0].firstChild.nodeValue;
-
-        // Red LED on pin 13 also toggles
-        if (msg == 0) {
-      document.getElementById("btn1").textContent = "YES";
-      document.getElementById("btn1").style.backgroundColor = "#f2f2f2";
-    } else {
-      document.getElementById("btn1").textContent = "NO";
+    if (msg == 0) { // not running
+      document.getElementById("btn1").textContent = "EXP STAND BY";
+      document.getElementById("btn1").style.backgroundColor = "#a2a2a2";
+    } else { // running
+      document.getElementById("btn1").textContent = "EXP RUNNING";
       document.getElementById("btn1").style.backgroundColor = "#3df5aa";
+    }
+
+    // Toggle safety state box on pin 45
+    xmldoc = xmlResponse.getElementsByTagName("SATEFY");
+    msg = xmldoc[0].firstChild.nodeValue;
+    if (msg == 0) { // not running
+      document.getElementById("safety").textContent = "OFF";
+      document.getElementById("safety").style.backgroundColor = "#f2f2f2";
+    } else { // running
+      document.getElementById("safety").textContent = "ON";
+      document.getElementById("safety").style.backgroundColor = "#e74c3c";
+    }
+
+    // Toggle backup power state box on pin 46
+    xmldoc = xmlResponse.getElementsByTagName("BACKUP");
+    msg = xmldoc[0].firstChild.nodeValue;
+    if (msg == 0) { // not running
+      document.getElementById("backup-pwr").textContent = "OFF";
+      document.getElementById("backup-pwr").style.backgroundColor = "#f2f2f2";
+    } else { // running
+      document.getElementById("backup-pwr").textContent = "ON";
+      document.getElementById("backup-pwr").style.backgroundColor = "#e74c3c";
     }
 
     // Plots: Update
     var x_axis_interval = 50;
-
     var update = {
       x: [[dt], [dt], [dt]],
       y: [[msg_V0], [msg_B1], [msg_V1]]
@@ -775,11 +794,11 @@ function downloadURI(uri, name) {
     Plotly.extendTraces('charts', update, [0,1,2], x_axis_interval)
    
     // update the text in the table
-    if (msg == 0) {
-      document.getElementById("btn1").innerHTML = "Turn ON";
-    } else {
-      document.getElementById("btn1").innerHTML = "Turn OFF";
-    }
+    // if (msg == 0) {
+    //   document.getElementById("btn1").innerHTML = "Turn ON";
+    // } else {
+    //   document.getElementById("btn1").innerHTML = "Turn OFF";
+    // }
   }
 
   function process() {

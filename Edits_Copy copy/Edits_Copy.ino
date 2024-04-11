@@ -8,28 +8,38 @@
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
 
-const int led = 4;
+const int PIN_LED_SERVER = 4;
 const int buffer_size = 2048;
 
-const int PIN_OUTPUT = 21; // connected to nothing but an example of a digital write from the web page
-const int PIN_FAN = 5;    // pin 27 and is a PWM signal to control a fan speed
-const int PIN_LED = 13;     //On board LED
-const int PIN_A0 = 10;     // some analog input sensor
-const int PIN_A1 = 17;     // some analog input sensor
-const int PIN_A2 = 7;  
+// Digital state indicators
+const int PIN_LED_RUN = 11; // Experiment start light)
+const int PIN_LED_STOP = 13;    // Emergency Stop
+
+const int PIN_PWR_OPTI_MODE = 15;
+const int PIN_DURABILITY_MODE = 16;
+const int PIN_RATED_PWR_MODE = 18;
+
+// Digital state sensors (ON or OFF)
+const int PIN_SAFETY_STATE = 45;
+const int PIN_BACKUP_PWR = 47;
+
+// Analog pins
+const int PIN_A0 = 10;     // wind-speed
+const int PIN_A1 = 17;     // rpm
+const int PIN_A2 = 9;      // pwr
 
 
-const int PIN_PWR_OPTI_MODE = 16;
-const int PIN_DURABILITY_MODE = 15;
-const int PIN_RATED_PWR_MODE = 14;
-
+const int PIN_FAN = 5;  
 
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0, BitsA2 = 0;
 float VoltsA0 = 0, VoltsA1 = 0, VoltsA2 = 0;
 int FanSpeed = 0;
-bool LED0 = false, SomeOutput = false;
+bool STOPPED = false, RUNNING = false;
+
+int StateSafety = 0, StateBackup = 0;
+
 uint32_t SensorUpdate = 0;
 int FanRPM = 0;
 
@@ -43,13 +53,16 @@ void setup(void) {
 
   Serial.begin(115200);
 
-  pinMode(led, OUTPUT);
-  digitalWrite(led, 0);
+  pinMode(PIN_LED_SERVER, OUTPUT);
+  digitalWrite(PIN_LED_SERVER, 0);
 
   pinMode(PIN_FAN, OUTPUT);
 
-  pinMode(PIN_LED, OUTPUT);
-  digitalWrite(PIN_LED, LED0);
+  pinMode(PIN_LED_STOP, OUTPUT);
+  digitalWrite(PIN_LED_STOP, STOPPED);
+
+  pinMode(PIN_LED_RUN, OUTPUT);
+  digitalWrite(PIN_LED_RUN, RUNNING);
 
 // -----------------New Code-----------------
   pinMode(PIN_PWR_OPTI_MODE, OUTPUT);
@@ -61,6 +74,9 @@ void setup(void) {
   pinMode(PIN_RATED_PWR_MODE, OUTPUT);
   digitalWrite(PIN_RATED_PWR_MODE, 0);
 // -----------------New Code-----------------
+
+  pinMode(PIN_SAFETY_STATE, INPUT);
+  pinMode(PIN_BACKUP_PWR, INPUT);
 
 
   // configure LED PWM functionalitites
@@ -95,8 +111,8 @@ void setup(void) {
   server.on("/xml", SendXML);
 
   server.on("/UPDATE_SLIDER", UpdateSlider);
-  server.on("/BUTTON_0", ProcessButton_0);
-  server.on("/BUTTON_1", ProcessButton_1);
+  server.on("/BUTTON_STOP", ProcessStopButton);
+  server.on("/BUTTON_RUN", ProcessRunButton);
 
 //-----------------New Code-----------------
   server.on("/PWR_OPTI", SetPwrOptiMode);
@@ -120,9 +136,16 @@ void loop(void) {
     BitsA2 = analogRead(PIN_A2);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 12 / 4096; // wind speed
+    VoltsA0 = BitsA0 * 16 / 4096; // wind speed
     VoltsA1 = BitsA1 * 2000 / 4096; // RPM
-    VoltsA2 = BitsA2 * 20 / 4096;    // Power
+    VoltsA2 = BitsA2 * 40 / 4096;    // Power
+
+    // Read the safety and backup states from ESP32
+    StateSafety = digitalRead(PIN_SAFETY_STATE);
+    StateBackup = digitalRead(PIN_BACKUP_PWR);
+
+    Serial.println(StateSafety); // Print the value to the serial monitor
+  
 
   }
   server.handleClient();
@@ -130,13 +153,13 @@ void loop(void) {
 }
 
 void HandleRoot() {
-  digitalWrite(led, 1);
+  digitalWrite(PIN_LED_SERVER, 1);
   server.send(200, "text/html", PAGE_MAIN);
-  digitalWrite(led, 0);
+  digitalWrite(PIN_LED_SERVER, 0);
 }
 
 void HandleNotFound() {
-  digitalWrite(led, 1);
+  digitalWrite(PIN_LED_SERVER, 1);
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -151,23 +174,24 @@ void HandleNotFound() {
   }
 
   server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
+  digitalWrite(PIN_LED_SERVER, 0);
 }
 
-void ProcessButton_0() {
-  LED0 = !LED0;
-  digitalWrite(PIN_LED, LED0);
-  Serial.print("Button 0 "); Serial.println(LED0);
-  server.send(200, "text/plain", ""); //Send web page
+// Stop button toggles
+void ProcessStopButton() {
+  STOPPED = !STOPPED;
+  digitalWrite(PIN_LED_STOP, STOPPED);
+  Serial.print("Button 0 "); Serial.println(STOPPED);
+  server.send(200, "text/plain", ""); 
 }
 
-// same notion for processing button_1
-void ProcessButton_1() {
-  Serial.println("Button 1 press");
-  SomeOutput = !SomeOutput;
-  digitalWrite(PIN_OUTPUT, SomeOutput);
-  Serial.print("Button 1 "); Serial.println(SomeOutput);
-  server.send(200, "text/plain", ""); //Send web page
+// Run button toggles
+void ProcessRunButton() {
+  Serial.println("Exp run button press");
+  RUNNING = !RUNNING;
+  digitalWrite(PIN_LED_RUN, RUNNING);
+  Serial.print("Experiment Run Status: "); Serial.println(RUNNING);
+  server.send(200, "text/plain", ""); 
 }
 
 // sent power optimization mode to high
@@ -242,23 +266,30 @@ void SendXML() {
   sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA2), abs((int) (VoltsA2 * 10)  - ((int) (VoltsA2) * 10)));
   strcat(XML, buf);
 
-  // show led0 status
-  if (LED0) {
-    strcat(XML, "<LED>1</LED>\n");
+
+   // Send STOP button status
+  if (STOPPED) {
+    strcat(XML, "<STOP>1</STOP>\n");
   }
   else {
-    strcat(XML, "<LED>0</LED>\n");
+    strcat(XML, "<STOP>0</STOP>\n");
   }
 
-
- // show some button status
-  if (SomeOutput) {
-    strcat(XML, "<SOME>1</SOME>\n");
+  // Send EXP button status
+  if (RUNNING) {
+    strcat(XML, "<RUN>1</RUN>\n");
   }
   else {
-    strcat(XML, "<SOME>0</SOME>\n");
+    strcat(XML, "<RUN>0</RUN>\n");
   }
 
+  // Send safety state
+  sprintf(buf, "<SAFETY>%d</SAFETY>\n", StateSafety);
+  strcat(XML, buf);
+
+  // Send backup state
+  sprintf(buf, "<BACKUP>%d</BACKUP>\n", StateBackup);
+  strcat(XML, buf);
 
   strcat(XML, "</Data>\n");
   server.send(200, "text/xml", XML);

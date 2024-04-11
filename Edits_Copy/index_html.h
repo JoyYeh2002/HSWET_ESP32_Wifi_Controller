@@ -362,8 +362,8 @@ footer {
     </div>
 
     <div class="stop-display-box" id="title-estop">
-      <h3>START EXPERIMENT</h3>
-      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">RUN TRIAL</button>
+      <h3>RUN BUTTON</h3>
+      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
     </div>
 
 
@@ -413,7 +413,7 @@ footer {
 
         <div class="data-display-box">
             <h3>BACKUP PWR</h3>
-            <p id="backup-pwr" class="toggle-state"> OFF</p>
+            <p id="backup" class="toggle-state"> OFF</p>
         </div>
       </div>
 
@@ -594,9 +594,9 @@ footer {
     yaxis3: {
       anchor: 'x3', 
       domain: [0, plotHeight],
-      range: [0, 20],
+      range: [0, 11],
       tickmode: 'array',
-      tickvals: [0, 4, 8, 12, 16, 20]
+      tickvals: [0, 2, 4, 6, 8, 10]
     }
   }
 
@@ -618,44 +618,15 @@ footer {
     return xmlHttp;
   }
 
-  // ----------------- DOWNLOAD BUTTON -------------------
- // global variable to hold URL to file to be downloaded (see generateCSVUrl())
- let csvFileUrl = null;
-
-// Function for generating a text file URL containing given text
-function generateCSVUrl(txt) {
-    let fileData = new Blob([txt], {type: 'text/csv'});
-    // If a file has been previously generated, revoke the existing URL
-    if (csvFileUrl !== null) {
-        window.URL.revokeObjectURL(textFile);
-    }
-    csvFileUrl = window.URL.createObjectURL(fileData);
-    // Returns a reference to the global variable holding the URL
-    // Again, this is better than generating and returning the URL itself from the function as it will eat memory if the file contents are large or regularly changing
-    return csvFileUrl;
-};
-
-// Function for downloading file from URI
-function downloadURI(uri, name) {
-  let link = document.createElement("a");
-  link.download = name;
-  link.href = uri;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  delete link;
-}
-
   // -----------------------------------------------------
 
-  // BUTTON_STOP (BUTTON_0) 
+  /* This is E-Stop */
   function ButtonPress0() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_STOP", false);
     xhttp.send();
   }
 
-  // BUTTON_RUN (BUTTON_1) 
   function ButtonPress1() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_RUN", false);
@@ -751,7 +722,7 @@ function downloadURI(uri, name) {
       document.getElementById("btn0").style.backgroundColor = "#e74c3c";
     }
 
-    // Toggle exp run button on pin 21
+    // Toggle exp run button on pin 11
     xmldoc = xmlResponse.getElementsByTagName("RUN");
     msg = xmldoc[0].firstChild.nodeValue;
     if (msg == 0) { // not running
@@ -762,8 +733,9 @@ function downloadURI(uri, name) {
       document.getElementById("btn1").style.backgroundColor = "#3df5aa";
     }
 
+
     // Toggle safety state box on pin 45
-    xmldoc = xmlResponse.getElementsByTagName("SATEFY");
+    xmldoc = xmlResponse.getElementsByTagName("SAFETY");
     msg = xmldoc[0].firstChild.nodeValue;
     if (msg == 0) { // not running
       document.getElementById("safety").textContent = "OFF";
@@ -777,15 +749,16 @@ function downloadURI(uri, name) {
     xmldoc = xmlResponse.getElementsByTagName("BACKUP");
     msg = xmldoc[0].firstChild.nodeValue;
     if (msg == 0) { // not running
-      document.getElementById("backup-pwr").textContent = "OFF";
-      document.getElementById("backup-pwr").style.backgroundColor = "#f2f2f2";
+      document.getElementById("backup").textContent = "OFF";
+      document.getElementById("backup").style.backgroundColor = "#f2f2f2";
     } else { // running
-      document.getElementById("backup-pwr").textContent = "ON";
-      document.getElementById("backup-pwr").style.backgroundColor = "#e74c3c";
+      document.getElementById("backup").textContent = "ON";
+      document.getElementById("backup").style.backgroundColor = "#e74c3c";
     }
 
     // Plots: Update
     var x_axis_interval = 50;
+
     var update = {
       x: [[dt], [dt], [dt]],
       y: [[msg_V0], [msg_B1], [msg_V1]]
@@ -794,11 +767,11 @@ function downloadURI(uri, name) {
     Plotly.extendTraces('charts', update, [0,1,2], x_axis_interval)
    
     // update the text in the table
-    // if (msg == 0) {
-    //   document.getElementById("btn1").innerHTML = "Turn ON";
-    // } else {
-    //   document.getElementById("btn1").innerHTML = "Turn OFF";
-    // }
+    if (msg == 0) {
+      document.getElementById("btn1").innerHTML = "EXP PAUSED";
+    } else {
+      document.getElementById("btn1").innerHTML = "EXPR RUNNING";
+    }
   }
 
   function process() {
@@ -811,31 +784,55 @@ function downloadURI(uri, name) {
   }
 
 // -------------------- DOWNLOAD REPORT FORMATTING ---------------
+
+
+  // ----------------- DOWNLOAD BUTTON -------------------
+ // global variable to hold URL to file to be downloaded (see generateCSVUrl())
+ let csvFileUrl = null;
+
+// Function for generating a text file URL containing given text
+function generateCSVUrl(txt) {
+    let fileData = new Blob([txt], {type: 'text/csv'});
+    // If a file has been previously generated, revoke the existing URL
+    if (csvFileUrl !== null) {
+        window.URL.revokeObjectURL(csvFileUrl);
+    }
+    csvFileUrl = window.URL.createObjectURL(fileData);
+    // Returns a reference to the global variable holding the URL
+    // Again, this is better than generating and returning the URL itself from the function as it will eat memory if the file contents are large or regularly changing
+    return csvFileUrl;
+};
+
+// Function for downloading file from URI
+function downloadURI(uri, name) {
+  let link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
   function downloadTracesAsCSV() {
-    // trace1.y & trace2.x/y should all be the same length
     let today = new Date();
     let csvData = `HSWET Turbine Dashboard Download,\n${today}\n
     Time, ${trace1.name}, ${trace2.name}, ${trace3.name}\n`;
     for (let i = 0; i < trace1.x.length; i++) {
       let x1 = trace1.x[i].toLocaleTimeString('en-US')
-     
       csvData += `\n${x1}, ${trace1.y[i]}, ${trace2.y[i]}, ${trace3.y[i]}`;
     }
+    
     let url = generateCSVUrl(csvData)
 
     const dt = new Date();  // Create a date time object (replace with your actual object if needed)
-
     const year = dt.getFullYear();
     const month = String(dt.getMonth() + 1).padStart(2, "0"); // Month (0-indexed)
     const day = String(dt.getDate()).padStart(2, "0");  // Day
-
     const hours = String(dt.getHours()).padStart(2, "0");
     const minutes = String(dt.getMinutes()).padStart(2, "0");
 
     const formattedDateTime = `${month}_${day}_${year}_${hours}_${minutes}`;
-
-
-
     downloadURI(url, formattedDateTime + "_turbine_data.csv");
 
     document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedTime;
