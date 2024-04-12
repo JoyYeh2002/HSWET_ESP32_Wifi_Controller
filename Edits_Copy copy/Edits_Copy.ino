@@ -144,8 +144,6 @@ void loop(void) {
     StateSafety = digitalRead(PIN_SAFETY_STATE);
     StateBackup = digitalRead(PIN_BACKUP_PWR);
 
-    Serial.println(StateSafety); // Print the value to the serial monitor
-  
 
   }
   server.handleClient();

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="js-focus-visible">
+
+<head>
+  <script src="https://cdn.plot.ly/plotly-2.30.1.min.js" charset="utf-8"></script>
+</head>
+
+<title>HWSET WIFI Turbine Dashboard</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+h3, button {
+  font-family: Arial, sans-serif;
+  font-size: 1.05rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+header {
+  max-width: 96vw;
+  margin: auto;
+  border-radius: 0.5rem;
+  background-color: #3498db;
+  padding: 8px;
+  text-align: center;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stop-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Flex items spaced apart */
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 5px;
+  /* Added more left and right padding */
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 0.8rem;
+  /* Added more width */
+  width: 20%;
+}
+
+.stop-display-box h3 {
+  margin: 0;
+  padding: 5px;
+}
+
+.stop-display-box button {
+  background-color: #3498db;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.4s ease;
+  padding: 8px 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+
+
+.stop-btn {
+  background-color: #dc847a !important;
+}
+
+.stop-btn:hover {
+  background-color: #c13324 !important;
+}
+
+.run-btn {
+  background-color: #a0b49e !important;
+}
+
+.run-btn:hover {
+  background-color: #558451 !important;
+}
+
+#title h3 {
+  color: white;
+  font-size: 1.35rem;
+}
+
+</style>
+
+<!-- NORMAL SENSOR MONITOR -->
+<body style="background-color: #efefef" onload="process()">
+
+  <!-- MY HTML STARTS HERE -->
+  <header>
+    <div class="stop-display-box" id="title-estop">
+      <h3>EMERGENCY</h3>
+      <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
+    </div>
+
+    <div id="title">
+      <h3>Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
+    </div>
+
+    <div class="stop-display-box" id="title-estop">
+      <h3>EXPERIMENT</h3>
+      <button type="button" class="run-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
+    </div>
+
+  </header>
+</body>

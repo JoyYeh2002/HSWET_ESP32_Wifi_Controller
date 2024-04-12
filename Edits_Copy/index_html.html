@@ -631,6 +631,8 @@ footer {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_RUN", false);
     xhttp.send();
+
+    startDataCollection();
   }
 
   function SetOperationMode(mode_str) {
@@ -766,12 +768,6 @@ footer {
     
     Plotly.extendTraces('charts', update, [0,1,2], x_axis_interval)
    
-    // update the text in the table
-    if (msg == 0) {
-      document.getElementById("btn1").innerHTML = "EXP PAUSED";
-    } else {
-      document.getElementById("btn1").innerHTML = "EXPR RUNNING";
-    }
   }
 
   function process() {
@@ -817,28 +813,16 @@ let csvData = ""; // Global variable to hold CSV data
 
 // Function to start data collection (call this when "Start Experiment Trial" button is clicked)
 function startDataCollection() {
-  // // Example: Start collecting data in the background (replace this with your actual data collection logic)
-  // setInterval(() => {
-  //   // Example: Generate random data for demo
-  //   let timestamp = new Date().toLocaleTimeString('en-US');
-  //   let randomValue1 = Math.random() * 100;
-  //   let randomValue2 = Math.random() * 100;
-  //   let randomValue3 = Math.random() * 100;
-
-  //   // Append data to CSV string
-  //   csvData += `\n${timestamp}, ${randomValue1}, ${randomValue2}, ${randomValue3}`;
-  // }, 1000); // Collect data every second (adjust as needed)
-
     for (let i = 0; i < trace1.x.length; i++) {
       let x1 = trace1.x[i].toLocaleTimeString('en-US')
       csvData += `\n${x1}, ${trace1.y[i]}, ${trace2.y[i]}, ${trace3.y[i]}`;
     }
-
-
 }
 
 // Function to generate CSV data and download CSV file (call this when "Download CSV" button is clicked)
 function downloadTracesAsCSV() {
+
+  startDataCollection(); // Start data collection
   let today = new Date();
   let header = `HSWET Turbine Dashboard Download,\n${today}\nTime, Trace1, Trace2, Trace3\n`;
   let finalCSVData = header + csvData; // Combine header and collected data
@@ -859,33 +843,6 @@ function downloadTracesAsCSV() {
   document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedDateTime;
 }
 
-
-
-  function downloadTracesAsCSV_old() {
-    let today = new Date();
-    let csvData = `HSWET Turbine Dashboard Download,\n${today}\n
-    Time, ${trace1.name}, ${trace2.name}, ${trace3.name}\n`;
-    for (let i = 0; i < trace1.x.length; i++) {
-      let x1 = trace1.x[i].toLocaleTimeString('en-US')
-      csvData += `\n${x1}, ${trace1.y[i]}, ${trace2.y[i]}, ${trace3.y[i]}`;
-    }
-
-    let url = generateCSVUrl(csvData)
-
-    const dt = new Date();  // Create a date time object (replace with your actual object if needed)
-    const year = dt.getFullYear();
-    const month = String(dt.getMonth() + 1).padStart(2, "0"); // Month (0-indexed)
-    const day = String(dt.getDate()).padStart(2, "0");  // Day
-    const hours = String(dt.getHours()).padStart(2, "0");
-    const minutes = String(dt.getMinutes()).padStart(2, "0");
-
-    const formattedDateTime = `${month}_${day}_${year}_${hours}_${minutes}`;
-    downloadURI(url, formattedDateTime + "_turbine_data.csv");
-
-    document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedTime;
-  }
-
-  // -------------------------------------------------------------
 
   // MY JS STARTS HERE ---------------------------------------
 // Button Interactions
