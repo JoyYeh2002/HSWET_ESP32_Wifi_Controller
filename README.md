@@ -3,4 +3,4 @@
 
 - Source Code / [Tutorial on GitHub](https://github.com/KrisKasprzak/ESP32_WebPage)
 - 03/21/2024: Adapting code from ESP32 to ESP32-S3 + [breadboard demo video](https://youtu.be/T2WAPD_gpc0)
-- TODO: figure out plotting and log file saving, discuss interface design, error handling, etc.
+- 04/17/2024: Check the "walkthrough" powerpoint slides for more details.
