@@ -18,8 +18,8 @@ const char *password = "ESP32_Tutorial";
 
 // -------- [FEEL FREE TO CHANGE] Set up the pins ----------
 // Digital output state indicators
-const int PIN_LED_STOP = 1;   // [GOOD] Emergency Stop
-const int PIN_LED_RUN = 2;    // [GOOD] Experiment start light
+const int PIN_LED_STOP = 18;   // [GOOD] Emergency Stop
+const int PIN_LED_RUN = 19;    // [GOOD] Experiment start light
 
 // LEDs for the 3 modes [GOOD]
 const int PIN_PWR_OPTI_MODE = 5;   // [GOOD]
@@ -28,27 +28,34 @@ const int PIN_RATED_PWR_MODE = 7;  // [GOOD]
 
 // Digital state sensors (ON or OFF)
 // Don't use pin 8
-const int PIN_SAFETY_STATE = 19;   // [GOOD]
-const int PIN_BACKUP_PWR = 9;      // [GOOD]
+const int PIN_SAFETY_STATE = 9;    // [GOOD]
+const int PIN_BACKUP_PWR = 10;      // [GOOD]
 
 // Analog pins for wind speed, RPM, and output power
-const int PIN_A0 = 3;   // wind-speed [GOOD]
-const int PIN_A1 = 18;   // rpm [GOOD]
-const int PIN_A2 = 4;   // pwr ?? Not moving??
+const int PIN_A0 = 0;   // wind-speed [GOOD]
+const int PIN_A1 = 1;   // rpm [GOOD]
+const int PIN_A2 = 2;   // pwr [GOOD]
 
+// Analog pins for wind speed, RPM, and output power
+const int PIN_I2C_CURRENT_SEND = 8;    // I2C for the E-load (Pin #1) 
+const int PIN_I2C_CURRENT_MEASURE = 3;   // I2C for the E-load (Pin #2)
+const int PIN_BLADE_PITCH = 4;  // blade pitch
 
 // This could be smaller if possible (for web page storage)
 const int buffer_size = 2048; 
 
 // ----------------- Set up variables -----------------
 const int max_wind_speed = 16; // [INPUT] max wind speed
-const int max_rpm = 2400; // [INPUT] max RPM
-const int max_pwr = 60; // [INPUT] max power
+const int max_rpm = 2400;      // [INPUT] max RPM
+const int max_pwr = 60;        // [INPUT] max power
 
 // initialize booleans and integer variables
 int BitsA0 = 0, BitsA1 = 0, BitsA2 = 0;
 float VoltsA0 = 0, VoltsA1 = 0, VoltsA2 = 0;
 bool STOPPED = false, RUNNING = false;
+
+float load_current_setpoint = 0;
+float load_current_measured = 0;
 
 int StateSafety = 0, StateBackup = 0;
 uint32_t SensorUpdate = 0;
@@ -82,15 +89,18 @@ void setup(void) {
   pinMode(PIN_RATED_PWR_MODE, OUTPUT);
   digitalWrite(PIN_RATED_PWR_MODE, 0);
 
+  // [TODO] Configure I2C pins for load current (SDA)
+  ledcSetup(0, 10000, 8);
+  ledcAttachPin(PIN_I2C_CURRENT_SEND, 0);
+  ledcWrite(0, load_current_setpoint);
+
+  // [TODO] Configure I2C pins for load current measure (SCL)
+  ledcSetup(0, 10000, 8);
+  ledcAttachPin(PIN_I2C_CURRENT_MEASURE, 0);
+  ledcWrite(0, load_current_measured);
+
   pinMode(PIN_SAFETY_STATE, INPUT);
   pinMode(PIN_BACKUP_PWR, INPUT);
-
-  // configure LED PWM functionalitites
-  // [TODO] Could use these colors for wind speed, RPM, PWR?
-  // ledcSetup(0, 10000, 8);
-  // ledcAttachPin(PIN_FAN, 0);
-  // ledcWrite(0, FanSpeed);
-  // pinMode(PIN_FAN, OUTPUT);
 
   // Might not need this
   disableCore0WDT();
@@ -121,7 +131,6 @@ void setup(void) {
   server.on("/", HandleRoot); // this sends the website
   server.on("/xml", SendXML);
 
-  // server.on("/UPDATE_SLIDER", UpdateSlider);
   server.on("/BUTTON_STOP", ProcessStopButton);
   server.on("/BUTTON_RUN", ProcessRunButton);
 
@@ -129,6 +138,7 @@ void setup(void) {
   server.on("/DURABILITY", SetDurabilityMode);
   server.on("/RATED_PWR", SetRatedPwrMode);
 
+  server.on("/UPDATE_LOAD_CURRENT", SendLoadCurrent);
 
   // ----------- Error handling + start server ------------
   server.onNotFound(HandleNotFound);
@@ -225,32 +235,45 @@ void SetDurabilityMode() {
   server.send(200, "text/plain", ""); 
 }
 
+// [TODO] [INTERFACE WITH E-LOAD CARD ADC]
+void SendLoadCurrent() {
+  Serial.println("Sending new load current: ");
+  String input_str = server.arg("VALUE"); // This grabs the new current value
+  load_current_setpoint = input_str.toInt();
+  Serial.print("Update E-Load Current"); Serial.println(load_current_setpoint);
+  ledcWrite(0, load_current_setpoint);
+
+  // [TODO] Actually get I-measured from the ADC
+  // [Interface with E-load script]
+  // send the measured current, something like:
+  // load_current_measured = getMeasuredCurrentFromELoad();
+
+  server.send(200, "text/plain", ""); 
+}
+
+void getMeasuredCurrentFromELoad() {
+  // [TODO]: talk to the E-load to get real-time measured current/voltage value
+  Serial.println("THIS IS A STUB.");
+}
+
 // Send the XML data to HTML in index_html.h. Encloses the data in XML tags
 void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
-  // send bitsA0
-  sprintf(buf, "<B0>%d</B0>\n", BitsA0);
-  strcat(XML, buf);
-
-  // send Volts0
+  // send Wind Speed (float)
   sprintf(buf, "<wind-speed>%d.%d</wind-speed>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
   strcat(XML, buf);
 
-  // send bits1
-  sprintf(buf, "<B1>%d</B1>\n", BitsA1);
-  strcat(XML, buf);
-
-  // send Volts1
+  // send RPM (float)
   sprintf(buf, "<rpm>%d.%d</rpm>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
   strcat(XML, buf);
 
-  // send bits2
-  sprintf(buf, "<B2>%d</B2>\n", BitsA2);
+  // send POWER (float)
+  sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA2), abs((int) (VoltsA2 * 10)  - ((int) (VoltsA2) * 10)));
   strcat(XML, buf);
 
-  // send Volts2
-  sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA2), abs((int) (VoltsA2 * 10)  - ((int) (VoltsA2) * 10)));
+  // [TODO] Send E-Load current measured (float)
+  sprintf(buf, "<load-current-measured>%.3f</load-current-measured>\n", load_current_measured);
   strcat(XML, buf);
 
   // Send STOP button status

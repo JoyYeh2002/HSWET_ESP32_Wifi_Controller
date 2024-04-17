@@ -148,33 +148,31 @@ section {
     grid-column: 2; /* Place in the first column (60%) */
 }
 
+.chart-textbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(30% - 10px); /* 33% of the height with spacing */
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-    
-    .chart-textbox {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: calc(30% - 10px); /* 33% of the height with spacing */
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+.chart-textbox h3,
+.chart-textbox p {
+  margin: 0;
+  text-align: center;
+}
 
-    .chart-textbox h3,
-    .chart-textbox p {
-      margin: 0;
-      text-align: center;
-    }
+.chart-textbox h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
 
-    .chart-textbox h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .chart-textbox p {
-      font-size: 2rem;
-      font-weight: bold;
-    }
+.chart-textbox p {
+  font-size: 2rem;
+  font-weight: bold;
+}
 
 
 .chart{
@@ -200,17 +198,15 @@ section {
 
 /* Left column bottom right, also used in radio buttons */
 .data-display-box {
-  
-    justify-content: center; /* Center horizontally */
-    align-items: center;
-    background-color: #f9f9f9;
-    padding: 2px;
-    border-radius: 5px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 2px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .radio-group {
   display: flex;
@@ -222,7 +218,6 @@ section {
 
 .radio-group input[type="radio"] {
   transform: scale(1.2); /* Increase the size of the radio buttons */
-  /* margin-left: 15px; Add some spacing between radio buttons and labels */
 }
 
 .radio-display-box {
@@ -245,8 +240,9 @@ section {
   background-color: rgb(192, 230, 239); /* Change to darker gray on hover */
 }
 
+/* [?] This is not working? */
 .radio-display-box input[type="radio"]:checked {
-  background-color: red; /* Change to red when selected */
+  background-color: red; 
 }
 
 /* Safety and back-up power on or off */
@@ -262,7 +258,7 @@ section {
 
 .chart {
   width: 100%;
-  height: 100%; /* Fill the entire height of the chart container */
+  height: 100%;
 }
 
 .controls {
@@ -330,7 +326,6 @@ input[type="text"] {
   align-items: center; /* Center vertically */
 }
 
-
 .send-btn:hover, .download-btn:hover {
   background-color: #2577ae;
 }
@@ -339,8 +334,6 @@ input[type="text"] {
   padding: 5px 3.5px;
   background-color:#3498db;
 }
-
-
 
 .msg {
   color: green;
@@ -377,7 +370,6 @@ footer {
   }
 }
 
-
 </style>
 
 <!-- NORMAL SENSOR MONITOR -->
@@ -386,8 +378,8 @@ footer {
   <!-- MY HTML STARTS HERE -->
   <header>
     <div class="stop-display-box" id="title-estop">
-      <h3>E-STOP (1)</h3>
-      <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
+      <h3>E-STOP (18)</h3>
+      <button type="button" class="stop-btn" id="btn0" onclick="ButtonPressStop()">STOP</button>
     </div>
 
     <div id="title">
@@ -395,19 +387,11 @@ footer {
     </div>
 
     <div class="stop-display-box" id="title-estop">
-      <h3>EXP (2)</h3>
-      <button type="button" class="run-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
+      <h3>EXP (19)</h3>
+      <button type="button" class="run-btn" id="btn1" onclick="ButtonPressRun()">RUN</button>
     </div>
   </header>
   <main>
-
-    <!-- Tags: 
-    text: 
-        wind-speed-value, rpm-value, pwr
-
-    charts:
-        wind-speed-chart, rpm-chart, pwr-chart
-    -->
     <section class="data-charts">
 
       <div class="charts-and-titles">
@@ -419,17 +403,17 @@ footer {
         <!-- tags on right column -->
         <div class="chart-text-column">
           <div class="chart-textbox">
-            <h3>WIND SPEED (3)</h3>
+            <h3>WIND SPEED (0)</h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
           </div>
           
           <div class="chart-textbox">
-            <h3>RPM (4)</h3>
+            <h3>RPM (1)</h3>
             <p id="rpm-value" class="data-value">0</p>
           </div>
         
           <div class="chart-textbox">
-            <h3>POWER (9)</h3>
+            <h3>POWER (2)</h3>
             <p id="pwr-value" class="data-value">0 W</p>
           </div>
         </div>
@@ -437,12 +421,12 @@ footer {
    
       <div class="left-display-box">
         <div class="data-display-box">
-            <h3>SAFETY STATE (19) </h3>
+            <h3>SAFETY STATE (9) </h3>
             <p id="safety" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
-            <h3>BACKUP PWR (9) </h3>
+            <h3>BACKUP PWR (10) </h3>
             <p id="backup" class="toggle-state"> OFF</p>
         </div>
       </div>
@@ -478,47 +462,43 @@ footer {
         
         <p id="radio-button-msg" class="msg">CONFIG: Choose a mode, then click on "CONFIGURE".</p>
       </div>
+            
+      <div class="control-box">
+        <div class="input-btn-flex">
+          <h3>LOAD CURRENT (0 to 2A): </h3>
+          <input type="text" id="new-load-value">
+          <!-- <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
+    <br> -->
 
-      <!-- HHYYYYYYYYYYYYYYYYYYYYYYYYYYY-->
- <div class="control-box">
-  <div class="input-btn-flex">
-    <h3>LOAD CURRENT (0 to 2A): </h3>
-    <input type="text" id="new-load-value">
-    <button id="send-i-load" class="send-btn">SEND</button>
-  </div>
-  <p id="load-current-msg" class="msg">CONFIG: Please enter load current.</p>
-</div>
+          <button id="send-i-load" class="send-btn">SEND</button>
+        </div>
+        <p id="load-current-msg" class="msg">CONFIG: Please enter load current.</p>
+      </div>
 
-<div class="control-box">
-  <div class="input-btn-flex">
-    <h3>BLADE PITCH (0 to 5):</h3>
-    <input type="text" id="new-blade-pitch" >
-    <button id="send-blade-pitch" class="send-btn">SEND</button>
-  </div>
-  <p id="blade-pitch-msg" class="msg">CONFIG: Please enter blade pitch state.</p>
-</div>
+      <div class="control-box">
+        <div class="input-btn-flex">
+          <h3>BLADE PITCH (1 to 5):</h3>
+          <input type="text" id="new-blade-pitch" >
+          <button id="send-blade-pitch" class="send-btn">SEND</button>
+        </div>
+        <p id="blade-pitch-msg" class="msg">CONFIG: Please enter blade pitch state.</p>
+      </div>
 
-    <!-- Time stamp and download button -->
-    <div class="timestamp">
-      <p id="date-time" class="msg">MM-DD-YYYY</p>
-      <p id="test-duration", class="msg">Test Duration: 0 mins, 0 sec</p>
-    </div>
+      <!-- Time stamp and download button -->
+      <div class="timestamp">
+        <p id="date-time" class="msg">MM-DD-YYYY</p>
+        <p id="test-duration", class="msg">Test Duration: 0 mins, 0 sec</p>
+      </div>
 
-    <button type="button" class="download-btn" id="downloadTraces" onclick="downloadTracesAsCSV()">DOWNLOAD DATA CSV</button>
+      <button type="button" class="download-btn" id="downloadTraces" onclick="downloadTracesAsCSV()">DOWNLOAD DATA CSV</button>
 
-    <p class="msg" id="download-msg">Press the button to download experiment results.</p>
+      <p class="msg" id="download-msg">Press the button to download experiment results.</p>
 
     </section>
   </main>
 </body>
 
 <script type="text/javascript">
-
-  // --------------------------------------------
-  function rand() {
-    return Math.random();
-  }
-
   var time = new Date();
   
   var trace1 = { 
@@ -554,7 +534,6 @@ footer {
     line: {color: '#9a9a9a'},
     showlegend: false
   };
-  
 
   var vw = window.innerWidth * 0.40;
   var vh = 500; // put 3 plots together
@@ -624,9 +603,9 @@ footer {
     yaxis3: {
       anchor: 'x3', 
       domain: [0, plotHeight],
-      range: [0, 11],
+      range: [0, 65],
       tickmode: 'array',
-      tickvals: [0, 2, 4, 6, 8, 10]
+      tickvals: [0, 10, 20, 30, 40, 50, 60]
     }
   }
 
@@ -648,26 +627,22 @@ footer {
     return xmlHttp;
   }
 
-  // -----------------------------------------------------
-
-  /* This is E-Stop */
-  function ButtonPress0() {
+  /* Buttons that send info back to the ESP */
+  function ButtonPressStop() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_STOP", false);
     xhttp.send();
   }
 
-  function ButtonPress1() {
+  function ButtonPressRun() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("PUT", "BUTTON_RUN", false);
     xhttp.send();
-
     startDataCollection();
   }
 
   function SetOperationMode(mode_str) {
     var xhttp = new XMLHttpRequest();
-    
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         // update the web based on reply from ESP
@@ -690,6 +665,11 @@ footer {
     }
   }
 
+  function UpdateLoadCUrrent(value) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("PUT", "UPDATE_LOAD_CURRENT?VALUE="+value, true);
+    xhttp.send();
+  }
 
   // function to handle the response from the ESP
   function response() {
@@ -716,7 +696,7 @@ footer {
     formattedDate = dt.toLocaleDateString();
     document.getElementById("date-time").textContent = "Time: " + formattedDate + " " + formattedTime;
     
-    // V0
+    // wind speed
     xmldoc = xmlResponse.getElementsByTagName("wind-speed");  
     msg_V0 = xmldoc[0].firstChild.nodeValue;
 
@@ -729,19 +709,22 @@ footer {
     document.getElementById("wind-speed-value").textContent = msg_V0 + " m/s";
     document.getElementById("wind-speed-value").style.color = color;
     
-    // B1
+    // rpm
     xmldoc = xmlResponse.getElementsByTagName("rpm");
     msg_B1 = xmldoc[0].firstChild.nodeValue;
 
     document.getElementById("rpm-value").textContent = msg_B1;
     document.getElementById("rpm-value").style.color = color;
 
-    // V1
+    // pwr
     xmldoc = xmlResponse.getElementsByTagName("pwr");
     msg_V1 = xmldoc[0].firstChild.nodeValue;
     document.getElementById("pwr-value").textContent = msg_V1 + " W";
     document.getElementById("pwr-value").style.color = color;
 
+    // [TODO] e-load measured currnet
+    xmldoc = xmlResponse.getElementsByTagName("load-current-measured");
+    msg_load_current_measured = xmldoc[0].firstChild.nodeValue;
 
     // Toggle stop button on pin 13
     xmldoc = xmlResponse.getElementsByTagName("STOP");
@@ -764,7 +747,6 @@ footer {
       document.getElementById("btn1").textContent = "RUNNING";
       document.getElementById("btn1").style.backgroundColor = "#3df5aa";
     }
-
 
     // Toggle safety state box on pin 45
     xmldoc = xmlResponse.getElementsByTagName("SAFETY");
@@ -811,9 +793,8 @@ footer {
 
 // -------------------- DOWNLOAD REPORT FORMATTING ---------------
 
-
-  // ----------------- DOWNLOAD BUTTON -------------------
- // global variable to hold URL to file to be downloaded (see generateCSVUrl())
+// ----------------- DOWNLOAD BUTTON -------------------
+// global variable to hold URL to file to be downloaded (see generateCSVUrl())
  let csvFileUrl = null;
 
 // Function for generating a text file URL containing given text
@@ -873,8 +854,6 @@ function downloadTracesAsCSV() {
   document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedDateTime;
 }
 
-
-  // MY JS STARTS HERE ---------------------------------------
 // Button Interactions
 
 const radioMsg = document.getElementById('radio-button-msg'); // Define radioMsg globally
@@ -904,13 +883,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (selectedRadio) {
           const selectedLabel = selectedRadio.nextElementSibling.textContent;
+          // Send the XML messaaage to the ESP
           SetOperationMode(selectedLabel);
+
+          // [NEW] Add to CSV
+          let x1 = trace1.x[i].toLocaleTimeString('en-US')
+          csvData += `\n${x1},,, ${selectedLabel}`;
         } else {
           radioMsg.textContent = 'ERROR: Please select a mode.';
       }
   });
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
   // Get elements
@@ -921,7 +904,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let previousValidValue = 0; // Variable to store the previous valid value
   let measuredValue = 0; 
 
-
   sendButton.addEventListener('click', function() {
       // Get the new value from the input
       const inputValue = newLoadValueInput.value.trim(); // Remove leading and trailing whitespace
@@ -929,16 +911,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (decimalCount <= 1) {
           // Parse the input value as a float with one decimal point
-          const newValue = parseFloat(inputValue).toFixed(1);
+          const newValue = parseFloat(inputValue).toFixed(3);
 
-          // Check if the parsed value is a valid float between 0 and 2
+          // This clause actually updates and verifies the load current value
           if (!isNaN(newValue) && newValue >= 0 && newValue <= 2) {
-              // Make pseudorandom number
-              const randomFactor = Math.random() * (1.002 - 0.998) + 0.998; // Random number between 0.998 and 1.002
-              const measuredValue = newValue * randomFactor;
+              // [PLACEHOLDER]
+              // const randomFactor = Math.random() * (1.002 - 0.998) + 0.998; // Random number between 0.998 and 1.002
+              // const measuredValue = newValue * randomFactor;
+              measuredValue = msg_load_current_measured; // [TODO] This should get the actually measured current
 
+              // [TODO] NEED TO ACTUALLY TALK TO ADC (one pin for send, one pin for receive)
+              UpdateLoadCurrent(newValue);
+ 
               // Update the displayed value and success message
-        
               loadCurrentMsg.textContent = `SUCCESS: Set to ${newValue} A. Measured ${measuredValue.toFixed(3)} A.`;
 
               // Save the new value as the previous valid value
