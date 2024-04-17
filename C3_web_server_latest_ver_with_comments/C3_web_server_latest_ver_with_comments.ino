@@ -29,7 +29,7 @@ const int PIN_RATED_PWR_MODE = 7;  // [GOOD]
 // Digital state sensors (ON or OFF)
 // Don't use pin 8
 const int PIN_SAFETY_STATE = 9;    // [GOOD]
-const int PIN_BACKUP_PWR = 10;      // [GOOD]
+const int PIN_BACKUP_PWR = 10;     // [GOOD]
 
 // Analog pins for wind speed, RPM, and output power
 const int PIN_A0 = 0;   // wind-speed [GOOD]
@@ -37,9 +37,9 @@ const int PIN_A1 = 1;   // rpm [GOOD]
 const int PIN_A2 = 2;   // pwr [GOOD]
 
 // Analog pins for wind speed, RPM, and output power
-const int PIN_I2C_CURRENT_SEND = 8;    // I2C for the E-load (Pin #1) 
-const int PIN_I2C_CURRENT_MEASURE = 3;   // I2C for the E-load (Pin #2)
-const int PIN_BLADE_PITCH = 4;  // blade pitch
+const int PIN_I2C_CURRENT_SEND = 8;    // [TODO] I2C for the E-load (Pin #1) 
+const int PIN_I2C_CURRENT_MEASURE = 3;   // [TODO] I2C for the E-load (Pin #2)
+const int PIN_BLADE_PITCH = 4;  // [TODO] blade pitch
 
 // This could be smaller if possible (for web page storage)
 const int buffer_size = 2048; 
