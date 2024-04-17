@@ -340,8 +340,6 @@ input[type="text"] {
   background-color:#3498db;
 }
 
-
-
 .msg {
   color: green;
 }
@@ -386,7 +384,7 @@ footer {
   <!-- MY HTML STARTS HERE -->
   <header>
     <div class="stop-display-box" id="title-estop">
-      <h3>E-STOP (1)</h3>
+      <h3>E-STOP (18)</h3>
       <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
     </div>
 
@@ -395,7 +393,7 @@ footer {
     </div>
 
     <div class="stop-display-box" id="title-estop">
-      <h3>EXP (2)</h3>
+      <h3>EXP (19)</h3>
       <button type="button" class="run-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
     </div>
   </header>
@@ -419,17 +417,17 @@ footer {
         <!-- tags on right column -->
         <div class="chart-text-column">
           <div class="chart-textbox">
-            <h3>WIND SPEED (3)</h3>
+            <h3>WIND SPEED (0)</h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
           </div>
           
           <div class="chart-textbox">
-            <h3>RPM (4)</h3>
+            <h3>RPM (1)</h3>
             <p id="rpm-value" class="data-value">0</p>
           </div>
         
           <div class="chart-textbox">
-            <h3>POWER (9)</h3>
+            <h3>POWER (2)</h3>
             <p id="pwr-value" class="data-value">0 W</p>
           </div>
         </div>
@@ -437,12 +435,12 @@ footer {
    
       <div class="left-display-box">
         <div class="data-display-box">
-            <h3>SAFETY STATE (19) </h3>
+            <h3>SAFETY STATE (9) </h3>
             <p id="safety" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
-            <h3>BACKUP PWR (9) </h3>
+            <h3>BACKUP PWR (10) </h3>
             <p id="backup" class="toggle-state"> OFF</p>
         </div>
       </div>
@@ -742,7 +740,6 @@ footer {
     document.getElementById("pwr-value").textContent = msg_V1 + " W";
     document.getElementById("pwr-value").style.color = color;
 
-
     // Toggle stop button on pin 13
     xmldoc = xmlResponse.getElementsByTagName("STOP");
     msg = xmldoc[0].firstChild.nodeValue;
@@ -764,7 +761,6 @@ footer {
       document.getElementById("btn1").textContent = "RUNNING";
       document.getElementById("btn1").style.backgroundColor = "#3df5aa";
     }
-
 
     // Toggle safety state box on pin 45
     xmldoc = xmlResponse.getElementsByTagName("SAFETY");
@@ -811,9 +807,8 @@ footer {
 
 // -------------------- DOWNLOAD REPORT FORMATTING ---------------
 
-
-  // ----------------- DOWNLOAD BUTTON -------------------
- // global variable to hold URL to file to be downloaded (see generateCSVUrl())
+// ----------------- DOWNLOAD BUTTON -------------------
+// global variable to hold URL to file to be downloaded (see generateCSVUrl())
  let csvFileUrl = null;
 
 // Function for generating a text file URL containing given text
@@ -873,8 +868,6 @@ function downloadTracesAsCSV() {
   document.getElementById("download-msg").textContent = "SUCCESS: Downloaded data CSV at " + formattedDateTime;
 }
 
-
-  // MY JS STARTS HERE ---------------------------------------
 // Button Interactions
 
 const radioMsg = document.getElementById('radio-button-msg'); // Define radioMsg globally
@@ -904,13 +897,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (selectedRadio) {
           const selectedLabel = selectedRadio.nextElementSibling.textContent;
+          // Send the XML messaaage to the ESP
           SetOperationMode(selectedLabel);
+
+          // [NEW] Add to CSV
+          let x1 = trace1.x[i].toLocaleTimeString('en-US')
+          csvData += `\n${x1},,, ${selectedLabel}`;
         } else {
           radioMsg.textContent = 'ERROR: Please select a mode.';
       }
   });
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
   // Get elements

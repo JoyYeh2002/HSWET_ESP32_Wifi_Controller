@@ -15,8 +15,6 @@
 */
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
-// ---------------------------------------------------------
-
 
 // -------- [FEEL FREE TO CHANGE] Set up the pins ----------
 // Digital output state indicators
@@ -40,12 +38,8 @@ const int PIN_A2 = 9;    // pwr
 // Web server status indicator (optional)
 const int PIN_LED_SERVER = 4;
 
-// Currently not using
-// const int PIN_FAN = 5;  
-
 // This could be smaller if possible (for web page storage)
 const int buffer_size = 2048; 
-// ---------------------------------------------------------
 
 // ----------------- Set up variables -----------------
 const int max_wind_speed = 16; // [INPUT] max wind speed
@@ -59,10 +53,6 @@ bool STOPPED = false, RUNNING = false;
 
 int StateSafety = 0, StateBackup = 0;
 uint32_t SensorUpdate = 0;
-
-// Not using this
-// int FanSpeed = 0;
-// int FanRPM = 0;
 
 // the XML array size needs to be bigger that your maximum expected size. 
 // 2048 is way too big for this example

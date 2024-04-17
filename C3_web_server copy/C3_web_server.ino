@@ -18,8 +18,8 @@ const char *password = "ESP32_Tutorial";
 
 // -------- [FEEL FREE TO CHANGE] Set up the pins ----------
 // Digital output state indicators
-const int PIN_LED_STOP = 18;   // [GOOD] Emergency Stop
-const int PIN_LED_RUN = 19;    // [GOOD] Experiment start light
+const int PIN_LED_STOP = 1;   // [GOOD] Emergency Stop
+const int PIN_LED_RUN = 2;    // [GOOD] Experiment start light
 
 // LEDs for the 3 modes [GOOD]
 const int PIN_PWR_OPTI_MODE = 5;   // [GOOD]
@@ -28,25 +28,22 @@ const int PIN_RATED_PWR_MODE = 7;  // [GOOD]
 
 // Digital state sensors (ON or OFF)
 // Don't use pin 8
-const int PIN_SAFETY_STATE = 9;    // [GOOD]
-const int PIN_BACKUP_PWR = 10;      // [GOOD]
+const int PIN_SAFETY_STATE = 19;   // [GOOD]
+const int PIN_BACKUP_PWR = 9;      // [GOOD]
 
 // Analog pins for wind speed, RPM, and output power
-const int PIN_A0 = 0;   // wind-speed [GOOD]
-const int PIN_A1 = 1;   // rpm [GOOD]
-const int PIN_A2 = 2;   // pwr [GOOD]
+const int PIN_A0 = 3;   // wind-speed [GOOD]
+const int PIN_A1 = 18;   // rpm [GOOD]
+const int PIN_A2 = 4;   // pwr ?? Not moving??
 
-// Analog pins for wind speed, RPM, and output power
-const int PIN_I_MEASURED = 3;   // current measured (E-load)
-const int PIN_BLADE_PITCH = 4;  // blade pitch
 
 // This could be smaller if possible (for web page storage)
 const int buffer_size = 2048; 
 
 // ----------------- Set up variables -----------------
 const int max_wind_speed = 16; // [INPUT] max wind speed
-const int max_rpm = 2400;      // [INPUT] max RPM
-const int max_pwr = 60;        // [INPUT] max power
+const int max_rpm = 2400; // [INPUT] max RPM
+const int max_pwr = 60; // [INPUT] max power
 
 // initialize booleans and integer variables
 int BitsA0 = 0, BitsA1 = 0, BitsA2 = 0;
