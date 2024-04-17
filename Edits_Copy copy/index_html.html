@@ -21,27 +21,85 @@ body {
   background-color: #f0f0f0;
 }
 
-h3 {
-  font-size: 1.05rem;
+h3, button {
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
 }
+
+h3 {
+  margin: 0;
+}
+
+
+#title h3 {
+  color: white;
+  font-size: 1.25rem;
+}
+
 
 header {
   max-width: 96vw;
-  margin: 0.5rem auto;
+  margin: auto;
   border-radius: 0.5rem;
   background-color: #3498db;
   padding: 8px;
   text-align: center;
 
-  display: grid;
-  grid-template-columns: 25% 65%; 
-  
-  #title {
-    color: white;
-    margin-top: 4px;
-    font-size: 1.3rem;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.stop-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Flex items spaced apart */
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 5px;
+
+  padding-left: 10px;
+  padding-right: 10px;
+  gap: 0.8rem;
+
+  width: 22%;
+}
+
+.stop-display-box h3 {
+  margin: 0;
+  padding: 5px;
+}
+
+.stop-display-box button {
+  background-color: #3498db;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.4s ease;
+  padding: 8px 16px;
+  width: 50%;
+}
+
+.stop-btn {
+  background-color: #dc847a !important;
+}
+
+.stop-btn:hover {
+  background-color: #c13324 !important;
+}
+
+.run-btn {
+  background-color: #a0b49e !important;
+}
+
+.run-btn:hover {
+  background-color: #558451 !important;
+}
+
 
 main {
   max-width: 96vw;
@@ -153,24 +211,6 @@ section {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.stop-display-box {
-  display: grid;
-  grid-template-columns: 65% 35%;
-  align-items: center;
-  background-color: #f9f9f9;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.stop-display-box h3 {
-  grid-column: 1;
-}
-
-.stop-display-box button {
-  grid-column: 2;
-}
 
 .radio-group {
   display: flex;
@@ -199,7 +239,6 @@ section {
     margin-top: 0.3rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Hover style for radio buttons */
 .radio-display-box:hover {
@@ -275,7 +314,7 @@ input[type="text"] {
     font-size:16px;
 }
 
-.send-btn, .stop-btn, .download-btn {
+.send-btn, .download-btn {
   background-color: #3498db;
   font-weight: bold;
   color: #fff;
@@ -291,15 +330,6 @@ input[type="text"] {
   align-items: center; /* Center vertically */
 }
 
-
-.stop-btn {
-  padding: 5px 10px;
-  background-color: #e74c3c;
-}
-
-.stop-btn:hover {
-  background-color: #c0392b;
-}
 
 .send-btn:hover, .download-btn:hover {
   background-color: #2577ae;
@@ -348,7 +378,6 @@ footer {
 }
 
 
-
 </style>
 
 <!-- NORMAL SENSOR MONITOR -->
@@ -357,23 +386,24 @@ footer {
   <!-- MY HTML STARTS HERE -->
   <header>
     <div class="stop-display-box" id="title-estop">
-      <h3>EMERGENCY STOP</h3>
+      <h3>E-STOP (13)</h3>
       <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
     </div>
 
-    <div class="stop-display-box" id="title-estop">
-      <h3>RUN BUTTON</h3>
-      <button type="button" class="stop-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
+    <div id="title">
+      <h3>Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
     </div>
 
-
-    <h3 id="title">Hopkins Student Wind Energy Team (HWSET) Turbine Control Panel</h3>
+    <div class="stop-display-box" id="title-estop">
+      <h3>EXP (11)</h3>
+      <button type="button" class="run-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
+    </div>
   </header>
   <main>
 
     <!-- Tags: 
     text: 
-        wind-speed-value, rpm-value, pwr-value
+        wind-speed-value, rpm-value, pwr
 
     charts:
         wind-speed-chart, rpm-chart, pwr-chart
@@ -389,17 +419,17 @@ footer {
         <!-- tags on right column -->
         <div class="chart-text-column">
           <div class="chart-textbox">
-            <h3>WIND SPEED </h3>
+            <h3>WIND SPEED (10)</h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
           </div>
           
           <div class="chart-textbox">
-            <h3>RPM </h3>
+            <h3>RPM (17)</h3>
             <p id="rpm-value" class="data-value">0</p>
           </div>
         
           <div class="chart-textbox">
-            <h3>POWER </h3>
+            <h3>POWER (9)</h3>
             <p id="pwr-value" class="data-value">0 W</p>
           </div>
         </div>
@@ -407,12 +437,12 @@ footer {
    
       <div class="left-display-box">
         <div class="data-display-box">
-            <h3>SAFETY STATE</h3>
+            <h3>SAFETY STATE (45) </h3>
             <p id="safety" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
-            <h3>BACKUP PWR</h3>
+            <h3>BACKUP PWR (47) </h3>
             <p id="backup" class="toggle-state"> OFF</p>
         </div>
       </div>
@@ -432,17 +462,17 @@ footer {
         <div class="radio-group">
             <div class="radio-display-box">
                 <input type="radio" id="pwr-optimization" name="mode" checked>
-                <label for="pwr-optimization">PWR OPTI</label>
+                <label for="pwr-optimization">PWR OPTI (15)</label>
             </div>
          
             <div class="radio-display-box">
                 <input type="radio" id="durability" name="mode">
-                <label for="durability">DURABILITY</label>
+                <label for="durability">DURABILITY (16)</label>
             </div>
                 
             <div class="radio-display-box">
                 <input type="radio" id="rated-pwr" name="mode">
-                <label for="rated-pwr">RATED PWR</label>
+                <label for="rated-pwr">RATED PWR (18)</label>
             </div>
         </div>
         
@@ -646,12 +676,12 @@ footer {
     }
   
     if (mode_str == "PWR OPTI") {
-      xhttp.open("PUT", "PWR_OPTI", true); 
+      xhttp.open("PUT", "PWR_OPTI (15)", true); 
       xhttp.send();
-    } else if (mode_str == "DURABILITY") {
+    } else if (mode_str == "DURABILITY (16)") {
         xhttp.open("PUT", "DURABILITY", true); 
         xhttp.send();
-    } else if (mode_str == "RATED PWR") {
+    } else if (mode_str == "RATED PWR (18)") {
         xhttp.open("PUT", "RATED_PWR", true); 
         xhttp.send();
     } else {
@@ -728,10 +758,10 @@ footer {
     xmldoc = xmlResponse.getElementsByTagName("RUN");
     msg = xmldoc[0].firstChild.nodeValue;
     if (msg == 0) { // not running
-      document.getElementById("btn1").textContent = "EXP STAND BY";
+      document.getElementById("btn1").textContent = "PAUSED";
       document.getElementById("btn1").style.backgroundColor = "#a2a2a2";
     } else { // running
-      document.getElementById("btn1").textContent = "EXP RUNNING";
+      document.getElementById("btn1").textContent = "RUNNING";
       document.getElementById("btn1").style.backgroundColor = "#3df5aa";
     }
 

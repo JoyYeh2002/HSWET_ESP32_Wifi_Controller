@@ -5,16 +5,25 @@
 #include <ESPmDNS.h>
 #include "index_html.h"
 
+
+// ----------------- Set up the web server -----------------
+/* How to configure your mobile hotspot
+1. Look up "mobile hotspot" on your Window laptop's search bar
+2. Set the "band" to 2.4 GHz
+3. Name the ssid and password to something that matches the Arduino code here
+4. Turn on the mobile hotspot every time you want to use the web server.
+*/
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
+// ---------------------------------------------------------
 
-const int PIN_LED_SERVER = 4;
-const int buffer_size = 2048;
 
-// Digital state indicators
-const int PIN_LED_RUN = 11; // Experiment start light)
-const int PIN_LED_STOP = 13;    // Emergency Stop
+// -------- [FEEL FREE TO CHANGE] Set up the pins ----------
+// Digital output state indicators
+const int PIN_LED_RUN = 11;    // Experiment start light
+const int PIN_LED_STOP = 13;   // Emergency Stop
 
+// LEDs for the 3 modes
 const int PIN_PWR_OPTI_MODE = 15;
 const int PIN_DURABILITY_MODE = 16;
 const int PIN_RATED_PWR_MODE = 18;
@@ -23,40 +32,53 @@ const int PIN_RATED_PWR_MODE = 18;
 const int PIN_SAFETY_STATE = 45;
 const int PIN_BACKUP_PWR = 47;
 
-// Analog pins
-const int PIN_A0 = 10;     // wind-speed
-const int PIN_A1 = 17;     // rpm
-const int PIN_A2 = 9;      // pwr
+// Analog pins for wind speed, RPM, and output power
+const int PIN_A0 = 10;   // wind-speed
+const int PIN_A1 = 17;   // rpm
+const int PIN_A2 = 9;    // pwr
 
+// Web server status indicator (optional)
+const int PIN_LED_SERVER = 4;
 
-const int PIN_FAN = 5;  
+// Currently not using
+// const int PIN_FAN = 5;  
 
+// This could be smaller if possible (for web page storage)
+const int buffer_size = 2048; 
+// ---------------------------------------------------------
 
-// variables to store measure data and sensor states
+// ----------------- Set up variables -----------------
+const int max_wind_speed = 16; // [INPUT] max wind speed
+const int max_rpm = 2400; // [INPUT] max RPM
+const int max_pwr = 60; // [INPUT] max power
+
+// initialize booleans and integer variables
 int BitsA0 = 0, BitsA1 = 0, BitsA2 = 0;
 float VoltsA0 = 0, VoltsA1 = 0, VoltsA2 = 0;
-int FanSpeed = 0;
 bool STOPPED = false, RUNNING = false;
 
 int StateSafety = 0, StateBackup = 0;
-
 uint32_t SensorUpdate = 0;
-int FanRPM = 0;
 
-// the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
+// Not using this
+// int FanSpeed = 0;
+// int FanRPM = 0;
+
+// the XML array size needs to be bigger that your maximum expected size. 
+// 2048 is way too big for this example
 char XML[buffer_size];
 char buf[32];
 
+// ------------ Web server starts here -----------------
 WebServer server(80);
 
 void setup(void) {
 
   Serial.begin(115200);
 
+  // Set up all the pins
   pinMode(PIN_LED_SERVER, OUTPUT);
   digitalWrite(PIN_LED_SERVER, 0);
-
-  pinMode(PIN_FAN, OUTPUT);
 
   pinMode(PIN_LED_STOP, OUTPUT);
   digitalWrite(PIN_LED_STOP, STOPPED);
@@ -64,7 +86,6 @@ void setup(void) {
   pinMode(PIN_LED_RUN, OUTPUT);
   digitalWrite(PIN_LED_RUN, RUNNING);
 
-// -----------------New Code-----------------
   pinMode(PIN_PWR_OPTI_MODE, OUTPUT);
   digitalWrite(PIN_PWR_OPTI_MODE, 0);
 
@@ -73,20 +94,22 @@ void setup(void) {
 
   pinMode(PIN_RATED_PWR_MODE, OUTPUT);
   digitalWrite(PIN_RATED_PWR_MODE, 0);
-// -----------------New Code-----------------
 
   pinMode(PIN_SAFETY_STATE, INPUT);
   pinMode(PIN_BACKUP_PWR, INPUT);
 
-
   // configure LED PWM functionalitites
-  ledcSetup(0, 10000, 8);
-  ledcAttachPin(PIN_FAN, 0);
-  ledcWrite(0, FanSpeed);
+  // [TODO] Could use these colors for wind speed, RPM, PWR?
+  // ledcSetup(0, 10000, 8);
+  // ledcAttachPin(PIN_FAN, 0);
+  // ledcWrite(0, FanSpeed);
+  // pinMode(PIN_FAN, OUTPUT);
 
+  // Might not need this
   disableCore0WDT();
-  disableCore1WDT();
+  // disableCore1WDT();
 
+  // ------ Wifi conncecion status is displayed in serial monitor ---
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
@@ -107,55 +130,55 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
 
-  server.on("/", HandleRoot); // this is SendWebsite()
+  // ------ Attach functions to their tags --------------
+  server.on("/", HandleRoot); // this sends the website
   server.on("/xml", SendXML);
 
-  server.on("/UPDATE_SLIDER", UpdateSlider);
+  // server.on("/UPDATE_SLIDER", UpdateSlider);
   server.on("/BUTTON_STOP", ProcessStopButton);
   server.on("/BUTTON_RUN", ProcessRunButton);
 
-//-----------------New Code-----------------
   server.on("/PWR_OPTI", SetPwrOptiMode);
   server.on("/DURABILITY", SetDurabilityMode);
   server.on("/RATED_PWR", SetRatedPwrMode);
-//-----------------New Code-----------------
 
 
+  // ----------- Error handling + start server ------------
   server.onNotFound(HandleNotFound);
   server.begin();
   Serial.println("HTTP server started");
 }
 
+// -------------- Main loop -----------------
 void loop(void) {
-
-    if ((millis() - SensorUpdate) >= 50) {
-    //Serial.println("Reading Sensors");
+  if ((millis() - SensorUpdate) >= 50) {
     SensorUpdate = millis();
+
+    // Read the analog pins for wind speed, RPN, and power
     BitsA0 = analogRead(PIN_A0);
     BitsA1 = analogRead(PIN_A1);
     BitsA2 = analogRead(PIN_A2);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 16 / 4096; // wind speed
-    VoltsA1 = BitsA1 * 2000 / 4096; // RPM
-    VoltsA2 = BitsA2 * 40 / 4096;    // Power
+    VoltsA0 = BitsA0 * max_wind_speed / 4096; 
+    VoltsA1 = BitsA1 * max_rpm / 4096; 
+    VoltsA2 = BitsA2 * max_pwr / 4096;   
 
     // Read the safety and backup states from ESP32
     StateSafety = digitalRead(PIN_SAFETY_STATE);
     StateBackup = digitalRead(PIN_BACKUP_PWR);
-
-
   }
   server.handleClient();
-  
 }
 
+// Sends the webpage
 void HandleRoot() {
   digitalWrite(PIN_LED_SERVER, 1);
   server.send(200, "text/html", PAGE_MAIN);
   digitalWrite(PIN_LED_SERVER, 0);
 }
 
+// Hanldes file not found error
 void HandleNotFound() {
   digitalWrite(PIN_LED_SERVER, 1);
   String message = "File Not Found\n\n";
@@ -192,51 +215,34 @@ void ProcessRunButton() {
   server.send(200, "text/plain", ""); 
 }
 
-// sent power optimization mode to high
+// Set power optimization mode high
 void SetPwrOptiMode() {
   Serial.println("Set to power optimization mode");
   digitalWrite(PIN_PWR_OPTI_MODE, 1);
   digitalWrite(PIN_RATED_PWR_MODE, 0);
   digitalWrite(PIN_DURABILITY_MODE, 0);
-  server.send(200, "text/plain", ""); //Send web page
+  server.send(200, "text/plain", ""); 
 }
 
+// Set rated power mode high
 void SetRatedPwrMode() {
   Serial.println("Set to rated power mode");
   digitalWrite(PIN_RATED_PWR_MODE, 1);
   digitalWrite(PIN_PWR_OPTI_MODE, 0);
   digitalWrite(PIN_DURABILITY_MODE, 0);
-  server.send(200, "text/plain", ""); //Send web page
+  server.send(200, "text/plain", ""); 
 }
 
+// Set durability mode high
 void SetDurabilityMode() {
   Serial.println("Set to durability mode");
   digitalWrite(PIN_DURABILITY_MODE, 1);
   digitalWrite(PIN_RATED_PWR_MODE, 0);
   digitalWrite(PIN_PWR_OPTI_MODE, 0);
-  server.send(200, "text/plain", ""); //Send web page
+  server.send(200, "text/plain", ""); 
 }
 
-
-void UpdateSlider() {
-  // many I hate strings, but wifi lib uses them...
-  String t_state = server.arg("VALUE");
-
-  // conver the string sent from the web page to an int
-  FanSpeed = t_state.toInt();
-  Serial.print("UpdateSlider"); Serial.println(FanSpeed);
-  // now set the PWM duty cycle
-  ledcWrite(0, FanSpeed);
-
-  FanRPM = map(FanSpeed, 0, 255, 0, 2400);
-  strcpy(buf, "");
-  sprintf(buf, "%d", FanRPM);
-  sprintf(buf, buf);
-
-  // now send it back
-  server.send(200, "text/plain", buf); //Send web page
-}
-
+// Send the XML data to HTML in index_html.h. Encloses the data in XML tags
 void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -264,8 +270,7 @@ void SendXML() {
   sprintf(buf, "<pwr>%d.%d</pwr>\n", (int) (VoltsA2), abs((int) (VoltsA2 * 10)  - ((int) (VoltsA2) * 10)));
   strcat(XML, buf);
 
-
-   // Send STOP button status
+  // Send STOP button status
   if (STOPPED) {
     strcat(XML, "<STOP>1</STOP>\n");
   }

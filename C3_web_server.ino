@@ -15,37 +15,30 @@
 */
 const char *ssid = "my_network";
 const char *password = "ESP32_Tutorial";
-// ---------------------------------------------------------
-
 
 // -------- [FEEL FREE TO CHANGE] Set up the pins ----------
 // Digital output state indicators
-const int PIN_LED_RUN = 11;    // Experiment start light
-const int PIN_LED_STOP = 13;   // Emergency Stop
+const int PIN_LED_RUN = 1;    // Experiment start light
+const int PIN_LED_STOP = 2;   // Emergency Stop
 
-// LEDs for the 3 modes
-const int PIN_PWR_OPTI_MODE = 15;
-const int PIN_DURABILITY_MODE = 16;
-const int PIN_RATED_PWR_MODE = 18;
+// LEDs for the 3 modes [GOOD]
+const int PIN_PWR_OPTI_MODE = 5;   // [GOOD]
+const int PIN_DURABILITY_MODE = 6; // [GOOD]
+const int PIN_RATED_PWR_MODE = 7;  // [GOOD]
 
 // Digital state sensors (ON or OFF)
-const int PIN_SAFETY_STATE = 45;
-const int PIN_BACKUP_PWR = 47;
+// Don't use pin 8
+const int PIN_SAFETY_STATE = 19;
+const int PIN_BACKUP_PWR = 9;      // [GOOD]
 
 // Analog pins for wind speed, RPM, and output power
-const int PIN_A0 = 10;   // wind-speed
-const int PIN_A1 = 17;   // rpm
-const int PIN_A2 = 9;    // pwr
+const int PIN_A0 = 3;   // wind-speed
+const int PIN_A1 = 4;   // rpm
+const int PIN_A2 = 18;    // pwr
 
-// Web server status indicator (optional)
-const int PIN_LED_SERVER = 4;
-
-// Currently not using
-// const int PIN_FAN = 5;  
 
 // This could be smaller if possible (for web page storage)
 const int buffer_size = 2048; 
-// ---------------------------------------------------------
 
 // ----------------- Set up variables -----------------
 const int max_wind_speed = 16; // [INPUT] max wind speed
@@ -60,10 +53,6 @@ bool STOPPED = false, RUNNING = false;
 int StateSafety = 0, StateBackup = 0;
 uint32_t SensorUpdate = 0;
 
-// Not using this
-// int FanSpeed = 0;
-// int FanRPM = 0;
-
 // the XML array size needs to be bigger that your maximum expected size. 
 // 2048 is way too big for this example
 char XML[buffer_size];
@@ -77,8 +66,6 @@ void setup(void) {
   Serial.begin(115200);
 
   // Set up all the pins
-  pinMode(PIN_LED_SERVER, OUTPUT);
-  digitalWrite(PIN_LED_SERVER, 0);
 
   pinMode(PIN_LED_STOP, OUTPUT);
   digitalWrite(PIN_LED_STOP, STOPPED);
@@ -173,14 +160,12 @@ void loop(void) {
 
 // Sends the webpage
 void HandleRoot() {
-  digitalWrite(PIN_LED_SERVER, 1);
   server.send(200, "text/html", PAGE_MAIN);
-  digitalWrite(PIN_LED_SERVER, 0);
 }
 
 // Hanldes file not found error
 void HandleNotFound() {
-  digitalWrite(PIN_LED_SERVER, 1);
+
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -193,9 +178,7 @@ void HandleNotFound() {
   for (uint8_t i = 0; i < server.args(); i++) {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
-
   server.send(404, "text/plain", message);
-  digitalWrite(PIN_LED_SERVER, 0);
 }
 
 // Stop button toggles

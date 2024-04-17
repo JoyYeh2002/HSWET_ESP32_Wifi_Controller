@@ -386,7 +386,7 @@ footer {
   <!-- MY HTML STARTS HERE -->
   <header>
     <div class="stop-display-box" id="title-estop">
-      <h3>E-STOP (13)</h3>
+      <h3>E-STOP (1)</h3>
       <button type="button" class="stop-btn" id="btn0" onclick="ButtonPress0()">STOP</button>
     </div>
 
@@ -395,7 +395,7 @@ footer {
     </div>
 
     <div class="stop-display-box" id="title-estop">
-      <h3>EXP (11)</h3>
+      <h3>EXP (2)</h3>
       <button type="button" class="run-btn" id="btn1" onclick="ButtonPress1()">RUN</button>
     </div>
   </header>
@@ -419,12 +419,12 @@ footer {
         <!-- tags on right column -->
         <div class="chart-text-column">
           <div class="chart-textbox">
-            <h3>WIND SPEED (10)</h3>
+            <h3>WIND SPEED (3)</h3>
             <p id="wind-speed-value" class="data-value">0 m/s</p>
           </div>
           
           <div class="chart-textbox">
-            <h3>RPM (17)</h3>
+            <h3>RPM (4)</h3>
             <p id="rpm-value" class="data-value">0</p>
           </div>
         
@@ -437,12 +437,12 @@ footer {
    
       <div class="left-display-box">
         <div class="data-display-box">
-            <h3>SAFETY STATE (45) </h3>
+            <h3>SAFETY STATE (19) </h3>
             <p id="safety" class="toggle-state"> OFF</p>
         </div>
 
         <div class="data-display-box">
-            <h3>BACKUP PWR (47) </h3>
+            <h3>BACKUP PWR (9) </h3>
             <p id="backup" class="toggle-state"> OFF</p>
         </div>
       </div>
@@ -462,17 +462,17 @@ footer {
         <div class="radio-group">
             <div class="radio-display-box">
                 <input type="radio" id="pwr-optimization" name="mode" checked>
-                <label for="pwr-optimization">PWR OPTI (15)</label>
+                <label for="pwr-optimization">PWR OPTI (5)</label>
             </div>
          
             <div class="radio-display-box">
                 <input type="radio" id="durability" name="mode">
-                <label for="durability">DURABILITY (16)</label>
+                <label for="durability">DURABILITY (6)</label>
             </div>
                 
             <div class="radio-display-box">
                 <input type="radio" id="rated-pwr" name="mode">
-                <label for="rated-pwr">RATED PWR (18)</label>
+                <label for="rated-pwr">RATED PWR (7)</label>
             </div>
         </div>
         
@@ -675,13 +675,13 @@ footer {
       }
     }
   
-    if (mode_str == "PWR OPTI") {
-      xhttp.open("PUT", "PWR_OPTI (15)", true); 
+    if (mode_str == "PWR OPTI (5)") {
+      xhttp.open("PUT", "PWR_OPTI", true); 
       xhttp.send();
-    } else if (mode_str == "DURABILITY (16)") {
+    } else if (mode_str == "DURABILITY (6)") {
         xhttp.open("PUT", "DURABILITY", true); 
         xhttp.send();
-    } else if (mode_str == "RATED PWR (18)") {
+    } else if (mode_str == "RATED PWR (7)") {
         xhttp.open("PUT", "RATED_PWR", true); 
         xhttp.send();
     } else {
